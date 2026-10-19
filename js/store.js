@@ -28,7 +28,7 @@ class DataStore {
       const defaultSettings = {
         gasUrl: "https://script.google.com/macros/s/AKfycbxf7E8JNMgIdgSR1nytpake7qoJ7TDAhZfdZZIjrh-DGhgxOtNe1FiDNp4SzKzI7Usf/exec",
         geminiApiKey: "",
-        dataMode: "LOCAL" // "LOCAL" or "GAS"
+        dataMode: "GAS" // "LOCAL" or "GAS"
       };
       localStorage.setItem(this.STORAGE_KEYS.SETTINGS, JSON.stringify(defaultSettings));
     }
