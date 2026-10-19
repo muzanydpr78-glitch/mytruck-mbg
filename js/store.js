@@ -26,7 +26,7 @@ class DataStore {
       localStorage.setItem(this.STORAGE_KEYS.LOGS, JSON.stringify(window.SEED_DATA.logs));
       
       const defaultSettings = {
-        gasUrl: "",
+        gasUrl: "https://script.google.com/macros/s/AKfycbxf7E8JNMgIdgSR1nytpake7qoJ7TDAhZfdZZIjrh-DGhgxOtNe1FiDNp4SzKzI7Usf/exec",
         geminiApiKey: "",
         dataMode: "LOCAL" // "LOCAL" or "GAS"
       };
