@@ -100,6 +100,7 @@ class AuthService {
             localStorage.setItem(this.SESSION_KEY, JSON.stringify({
               User_ID: user.User_ID,
               Username: user.Username,
+              Nama: user.Nama || user.Username,
               Role: user.Role,
               timestamp: Date.now()
             }));
@@ -117,7 +118,7 @@ class AuthService {
             return {
               success: true,
               user: this.currentUser,
-              message: `Selamat datang kembali, ${user.Username}!`
+              message: `Selamat datang kembali, ${user.Nama || user.Username}!`
             };
           } else if (gasRes.status === "error") {
             return { success: false, message: gasRes.message };
@@ -181,6 +182,7 @@ class AuthService {
     localStorage.setItem(this.SESSION_KEY, JSON.stringify({
       User_ID: user.User_ID,
       Username: user.Username,
+      Nama: user.Nama || user.Username,
       Role: user.Role,
       timestamp: Date.now()
     }));
@@ -190,7 +192,7 @@ class AuthService {
     return {
       success: true,
       user: this.currentUser,
-      message: `Selamat datang kembali, ${user.Username}!`
+      message: `Selamat datang kembali, ${user.Nama || user.Username}!`
     };
   }
 
@@ -309,6 +311,7 @@ class AuthService {
     }
 
     if (newUsername) currentRecord.Username = newUsername;
+    if (updates.Nama !== undefined) currentRecord.Nama = updates.Nama.trim();
     if (newEmail) currentRecord.Email = newEmail;
     currentRecord.Updated_by = currentRecord.Username;
 
@@ -320,6 +323,7 @@ class AuthService {
     localStorage.setItem(this.SESSION_KEY, JSON.stringify({
       User_ID: this.currentUser.User_ID,
       Username: this.currentUser.Username,
+      Nama: this.currentUser.Nama || this.currentUser.Username,
       Role: this.currentUser.Role,
       timestamp: Date.now()
     }));

@@ -4,11 +4,12 @@
  */
 
 const SEED_DATA = {
-  // DB_Users: [User_ID, Username, Email, Password_Hash, Role, Status_Aktif, Remember_Token, Token_Expiry, Last_Login]
+  // DB_Users: [User_ID, Username, Nama, Email, Password_Hash, Role, Status_Aktif, Remember_Token, Token_Expiry, Last_Login]
   users: [
     {
       User_ID: "USR-001",
       Username: "admin",
+      Nama: "Administrator",
       Email: "admin@mytruck.co.id",
       Password_Hash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", // admin123
       Role: "Admin",
@@ -20,6 +21,7 @@ const SEED_DATA = {
     {
       User_ID: "USR-002",
       Username: "operator",
+      Nama: "Anggun Operator",
       Email: "operator@mytruck.co.id",
       Password_Hash: "e6c2797fed853ff9d92176b6d59b2075ad4f4ea7c89fcaad7eb2487e411b95b1", // operator123 (sha256: operator123)
       Role: "Operator",
@@ -31,6 +33,7 @@ const SEED_DATA = {
     {
       User_ID: "USR-003",
       Username: "viewer",
+      Nama: "Management Viewer",
       Email: "management@mytruck.co.id",
       Password_Hash: "b36f7decf015a95610bcde594f83664d4f13fb46e16a2cc563cfd5d0f62d1033", // viewer123
       Role: "Viewer",

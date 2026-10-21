@@ -918,6 +918,7 @@
                 <tr>
                   <th>User ID</th>
                   <th>Username</th>
+                  <th>Nama Lengkap</th>
                   <th>Email</th>
                   <th>Role</th>
                   <th>Status</th>
@@ -1265,6 +1266,11 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" id="user-nama" class="form-control" placeholder="Contoh: Agus Pratama" required>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Email</label>
             <input type="email" id="user-email" class="form-control" placeholder="agus@mytruck.co.id" required>
           </div>
@@ -1346,11 +1352,20 @@
             <label class="form-label">Nama Pengguna (Username)</label>
             <div class="input-wrapper">
               <i data-lucide="user" class="input-icon"></i>
-              <input type="text" id="profile-username" class="form-control" placeholder="Masukkan username baru"
+              <input type="text" id="profile-username" class="form-control" placeholder="Masukkan username login"
                 required>
             </div>
-            <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Nama ini akan dipakai saat Anda
-              masuk/login ke sistem.</div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Username dipakai saat Anda masuk/login ke sistem.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap (Tampil di Dashboard)</label>
+            <div class="input-wrapper">
+              <i data-lucide="badge-check" class="input-icon"></i>
+              <input type="text" id="profile-nama" class="form-control" placeholder="Masukkan nama lengkap Anda"
+                required>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Nama ini yang akan ditampilkan di sidebar footer dan dashboard utama.</div>
           </div>
 
           <div class="form-group">

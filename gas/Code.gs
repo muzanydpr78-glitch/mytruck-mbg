@@ -191,6 +191,7 @@ function handleLogin(username, password, rememberMe) {
     user: {
       User_ID: targetUser.User_ID,
       Username: targetUser.Username,
+      Nama: targetUser.Nama || targetUser.Username,
       Email: targetUser.Email,
       Role: targetUser.Role
     }
@@ -213,46 +214,87 @@ function handleSaveUser(userData, currentUser) {
     }
   }
 
-  if (foundRow > 0) {
-    // Update existing user
-    sheet.getRange(foundRow, 2).setValue(userData.Username);
-    sheet.getRange(foundRow, 3).setValue(userData.Email);
-    if (userData.Password_Hash) {
-      sheet.getRange(foundRow, 4).setValue(userData.Password_Hash);
-    }
-    sheet.getRange(foundRow, 5).setValue(userData.Role);
-    sheet.getRange(foundRow, 6).setValue(userData.Status_Aktif);
+  // Check headers to detect if "Nama" column exists (or if format is old vs new)
+  var headers = data[0] || [];
+  var hasNamaCol = headers.indexOf("Nama") !== -1;
 
-    // Record Remember Token, Expiry, and Last Login (Kolom G, H, I)
+  if (foundRow > 0) {
+    if (hasNamaCol) {
+      // New schema: [User_ID, Username, Nama, Email, Password_Hash, Role, Status_Aktif, Remember_Token, Token_Expiry, Last_Login]
+      var colNama = headers.indexOf("Nama") + 1;
+      var colUser = headers.indexOf("Username") + 1;
+      var colMail = headers.indexOf("Email") + 1;
+      var colPass = headers.indexOf("Password_Hash") + 1;
+      var colRole = headers.indexOf("Role") + 1;
+      var colStat = headers.indexOf("Status_Aktif") + 1;
+
+      if (userData.Username) sheet.getRange(foundRow, colUser).setValue(userData.Username);
+      if (userData.Nama !== undefined) sheet.getRange(foundRow, colNama).setValue(userData.Nama);
+      if (userData.Email) sheet.getRange(foundRow, colMail).setValue(userData.Email);
+      if (userData.Password_Hash) sheet.getRange(foundRow, colPass).setValue(userData.Password_Hash);
+      if (userData.Role) sheet.getRange(foundRow, colRole).setValue(userData.Role);
+      if (userData.Status_Aktif) sheet.getRange(foundRow, colStat).setValue(userData.Status_Aktif);
+    } else {
+      // Legacy schema: [User_ID, Username, Email, Password_Hash, Role, Status_Aktif, ...]
+      sheet.getRange(foundRow, 2).setValue(userData.Username);
+      sheet.getRange(foundRow, 3).setValue(userData.Email);
+      if (userData.Password_Hash) {
+        sheet.getRange(foundRow, 4).setValue(userData.Password_Hash);
+      }
+      sheet.getRange(foundRow, 5).setValue(userData.Role);
+      sheet.getRange(foundRow, 6).setValue(userData.Status_Aktif);
+    }
+
+    // Record Remember Token, Expiry, and Last Login
+    var colRem = headers.indexOf("Remember_Token") !== -1 ? headers.indexOf("Remember_Token") + 1 : 7;
+    var colExp = headers.indexOf("Token_Expiry") !== -1 ? headers.indexOf("Token_Expiry") + 1 : 8;
+    var colLog = headers.indexOf("Last_Login") !== -1 ? headers.indexOf("Last_Login") + 1 : 9;
+
     if (userData.Remember_Token !== undefined) {
-      sheet.getRange(foundRow, 7).setValue(userData.Remember_Token);
+      sheet.getRange(foundRow, colRem).setValue(userData.Remember_Token);
     }
     if (userData.Token_Expiry !== undefined) {
-      sheet.getRange(foundRow, 8).setValue(userData.Token_Expiry);
+      sheet.getRange(foundRow, colExp).setValue(userData.Token_Expiry);
     }
     if (userData.Last_Login !== undefined) {
-      sheet.getRange(foundRow, 9).setValue(userData.Last_Login);
+      sheet.getRange(foundRow, colLog).setValue(userData.Last_Login);
     }
 
-    appendLog(currentUser || "Admin", "USER_UPDATE", "Update data user: " + userData.Username);
+    appendLog(currentUser || "Admin", "USER_UPDATE", "Update data user: " + (userData.Nama || userData.Username));
     return jsonResponse({ status: "success", message: "User berhasil diperbarui." });
   } else {
     // Create new user
     var newId = userData.User_ID || ("USR-" + Utilities.formatString("%03d", data.length));
     var pwdHash = userData.Password_Hash || hashPassword(userData.Password || "admin123");
-    sheet.appendRow([
-      newId,
-      userData.Username,
-      userData.Email,
-      pwdHash,
-      userData.Role || "Operator",
-      userData.Status_Aktif || "Aktif",
-      userData.Remember_Token || "",
-      userData.Token_Expiry || "",
-      userData.Last_Login || ""
-    ]);
+    
+    if (hasNamaCol) {
+      sheet.appendRow([
+        newId,
+        userData.Username,
+        userData.Nama || userData.Username,
+        userData.Email,
+        pwdHash,
+        userData.Role || "Operator",
+        userData.Status_Aktif || "Aktif",
+        userData.Remember_Token || "",
+        userData.Token_Expiry || "",
+        userData.Last_Login || ""
+      ]);
+    } else {
+      sheet.appendRow([
+        newId,
+        userData.Username,
+        userData.Email,
+        pwdHash,
+        userData.Role || "Operator",
+        userData.Status_Aktif || "Aktif",
+        userData.Remember_Token || "",
+        userData.Token_Expiry || "",
+        userData.Last_Login || ""
+      ]);
+    }
 
-    appendLog(currentUser || "Admin", "USER_CREATE", "Tambah user baru: " + userData.Username);
+    appendLog(currentUser || "Admin", "USER_CREATE", "Tambah user baru: " + (userData.Nama || userData.Username));
     return jsonResponse({ status: "success", message: "User baru berhasil ditambahkan." });
   }
 }
@@ -555,13 +597,13 @@ function readSheetData(sheetName) {
 function setupInitialSpreadsheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  // 1. DB_Users
+  // 1. DB_Users: [User_ID, Username, Nama, Email, Password_Hash, Role, Status_Aktif, Remember_Token, Token_Expiry, Last_Login]
   var sUsers = getOrCreateSheet(ss, "DB_Users");
   sUsers.clear();
-  sUsers.appendRow(["User_ID", "Username", "Email", "Password_Hash", "Role", "Status_Aktif", "Remember_Token", "Token_Expiry", "Last_Login"]);
-  sUsers.appendRow(["USR-001", "admin", "admin@mytruck.co.id", hashPassword("admin123"), "Admin", "Aktif", "", "", ""]);
-  sUsers.appendRow(["USR-002", "operator", "operator@mytruck.co.id", hashPassword("operator123"), "Operator", "Aktif", "", "", ""]);
-  sUsers.appendRow(["USR-003", "viewer", "viewer@mytruck.co.id", hashPassword("viewer123"), "Viewer", "Aktif", "", "", ""]);
+  sUsers.appendRow(["User_ID", "Username", "Nama", "Email", "Password_Hash", "Role", "Status_Aktif", "Remember_Token", "Token_Expiry", "Last_Login"]);
+  sUsers.appendRow(["USR-001", "admin", "Administrator", "admin@mytruck.co.id", hashPassword("admin123"), "Admin", "Aktif", "", "", ""]);
+  sUsers.appendRow(["USR-002", "operator", "Anggun Operator", "operator@mytruck.co.id", hashPassword("operator123"), "Operator", "Aktif", "", "", ""]);
+  sUsers.appendRow(["USR-003", "viewer", "Management Viewer", "viewer@mytruck.co.id", hashPassword("viewer123"), "Viewer", "Aktif", "", "", ""]);
   formatHeaderRow(sUsers);
 
   // 2. DB_Armada

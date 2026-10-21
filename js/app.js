@@ -65,8 +65,9 @@ class AppController {
 
     const user = window.authService.getCurrentUser();
     if (user) {
-      document.getElementById("sidebar-user-name").textContent = user.Username;
-      document.getElementById("sidebar-user-avatar").textContent = user.Username.charAt(0).toUpperCase();
+      const displayName = user.Nama || user.Username;
+      document.getElementById("sidebar-user-name").textContent = displayName;
+      document.getElementById("sidebar-user-avatar").textContent = displayName.charAt(0).toUpperCase();
 
       const roleBadge = document.getElementById("sidebar-user-role");
       roleBadge.textContent = user.Role.toUpperCase();
@@ -1006,6 +1007,7 @@ class AppController {
       tr.innerHTML = `
         <td><code>${u.User_ID}</code></td>
         <td><strong>${u.Username}</strong></td>
+        <td>${u.Nama || '-'}</td>
         <td>${u.Email}</td>
         <td><span class="user-role-badge role-${u.Role.toLowerCase()}">${u.Role}</span></td>
         <td>
@@ -1046,6 +1048,7 @@ class AppController {
       title.textContent = `Edit User (${u.Username})`;
       document.getElementById("user-id").value = u.User_ID;
       document.getElementById("user-username").value = u.Username;
+      document.getElementById("user-nama").value = u.Nama || "";
       document.getElementById("user-email").value = u.Email;
       document.getElementById("user-password").value = "";
       document.getElementById("user-role").value = u.Role;
@@ -1063,6 +1066,7 @@ class AppController {
     e.preventDefault();
     const userId = document.getElementById("user-id").value;
     const username = document.getElementById("user-username").value.trim();
+    const nama = document.getElementById("user-nama").value.trim();
     const email = document.getElementById("user-email").value.trim();
     const password = document.getElementById("user-password").value;
     const role = document.getElementById("user-role").value;
@@ -1070,6 +1074,7 @@ class AppController {
 
     const payload = {
       Username: username,
+      Nama: nama || username,
       Email: email,
       Role: role,
       Status_Aktif: status
@@ -1091,7 +1096,7 @@ class AppController {
     window.dataStore.saveUser(payload);
     this.closeModal("modal-user");
     this.renderUsersTable();
-    this.showToast("User Disimpan", `Akun ${username} berhasil disimpan.`, "success");
+    this.showToast("User Disimpan", `Akun ${nama || username} berhasil disimpan.`, "success");
   }
 
   deleteUser(userId) {
@@ -1127,8 +1132,9 @@ class AppController {
     const roleEl = document.getElementById("modal-profile-header-role");
     const idEl = document.getElementById("modal-profile-header-id");
 
-    if (avatarEl) avatarEl.textContent = (user.Username || "U").charAt(0).toUpperCase();
-    if (nameEl) nameEl.textContent = user.Username || "Pengguna";
+    const displayName = user.Nama || user.Username || "Pengguna";
+    if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
+    if (nameEl) nameEl.textContent = displayName;
     if (roleEl) {
       roleEl.textContent = (user.Role || "USER").toUpperCase();
       roleEl.className = `user-role-badge role-${(user.Role || "user").toLowerCase()}`;
@@ -1137,6 +1143,7 @@ class AppController {
 
     // Form inputs
     document.getElementById("profile-username").value = user.Username || "";
+    document.getElementById("profile-nama").value = user.Nama || user.Username || "";
     document.getElementById("profile-email").value = user.Email || "";
     document.getElementById("profile-current-password").value = "";
     document.getElementById("profile-new-password").value = "";
@@ -1155,13 +1162,19 @@ class AppController {
   async handleProfileFormSubmit(e) {
     e.preventDefault();
     const username = document.getElementById("profile-username").value.trim();
+    const nama = document.getElementById("profile-nama").value.trim();
     const email = document.getElementById("profile-email").value.trim();
     const currentPassword = document.getElementById("profile-current-password").value;
     const newPassword = document.getElementById("profile-new-password").value;
     const confirmPassword = document.getElementById("profile-confirm-password").value;
 
     if (!username) {
-      this.showToast("Username Kosong", "Nama pengguna tidak boleh kosong.", "error");
+      this.showToast("Username Kosong", "Nama pengguna (username) tidak boleh kosong.", "error");
+      return;
+    }
+
+    if (!nama) {
+      this.showToast("Nama Kosong", "Nama lengkap tidak boleh kosong.", "error");
       return;
     }
 
@@ -1188,6 +1201,7 @@ class AppController {
 
     const result = await window.authService.updateProfile({
       Username: username,
+      Nama: nama,
       Email: email,
       currentPassword: currentPassword,
       newPassword: newPassword
@@ -1198,12 +1212,13 @@ class AppController {
       return;
     }
 
-    // Update UI elements in App Shell
+    // Update UI elements in App Shell (tampilkan Nama, bukan username)
     const updatedUser = result.user;
+    const newDisplayName = updatedUser.Nama || updatedUser.Username;
     const sidebarName = document.getElementById("sidebar-user-name");
     const sidebarAvatar = document.getElementById("sidebar-user-avatar");
-    if (sidebarName) sidebarName.textContent = updatedUser.Username;
-    if (sidebarAvatar) sidebarAvatar.textContent = updatedUser.Username.charAt(0).toUpperCase();
+    if (sidebarName) sidebarName.textContent = newDisplayName;
+    if (sidebarAvatar) sidebarAvatar.textContent = newDisplayName.charAt(0).toUpperCase();
 
     // Re-render user table if user management view is active
     if (this.currentViewId === "view-user-management" && typeof this.renderUsersTable === "function") {

@@ -158,7 +158,7 @@ Sistem Web Monitoring Armada adalah platform aplikasi web internal berbasis Goog
 
 Google Sheets akan bertindak sebagai *database relational* dengan tab-tab berikut:
 
-1. **DB_Users:** `[User_ID, Username, Email, Password_Hash, Role, Status_Aktif, Remember_Token, Token_Expiry, Last_Login]`
+1. **DB_Users:** `[User_ID, Username, Nama, Email, Password_Hash, Role, Status_Aktif, Remember_Token, Token_Expiry, Last_Login]`
 2. **DB_Armada:** `[No, PT, Depo, Driver_ID, Nama_Driver, Vehicle_ID, Nopol, Jenis_Armada, Kapasitas, UOM, Tipe_Pengiriman]`
 3. **DB_Standby:** `[Document_ID, tanggal, PT, Nama_Depo, Driver_ID, Nama_Driver, Nopol, Status, Created_by, Created_at, Updated_at, Updated_by]`
 4. **DB_Muatan:** `[Jenis_Muatan, Document_ID, tanggal, Nama_Depo, Driver_ID, Nama_Driver, Vehicle_ID, Nopol, Product_ID, Nama_Product, QTY, Satuan, Keterangan, Created_dms_by, Uploaded_by, Upload_at]`
