@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web Monitoring Armada - Enterprise Logistics Intelligence</title>
-  <meta name="description" content="Sistem Web Monitoring Armada & Utilisasi Logistik berbasis Google Apps Script & Google Sheets dengan AI Executive Insights.">
+  <meta name="description"
+    content="Sistem Web Monitoring Armada & Utilisasi Logistik berbasis Google Apps Script & Google Sheets dengan AI Executive Insights.">
 
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -23,6 +26,7 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
   <!-- =========================================================================
@@ -31,7 +35,8 @@
   <div id="view-login" class="auth-container">
     <div class="auth-card">
       <div style="position: absolute; top: 16px; right: 16px;">
-        <button type="button" class="btn-icon theme-toggle-btn" title="Ganti Mode Terang / Gelap" onclick="window.app.toggleTheme()">
+        <button type="button" class="btn-icon theme-toggle-btn" title="Ganti Mode Terang / Gelap"
+          onclick="window.app.toggleTheme()">
           <i data-lucide="sun" class="icon-theme-sun" style="width: 16px; display: none;"></i>
           <i data-lucide="moon" class="icon-theme-moon" style="width: 16px;"></i>
         </button>
@@ -50,7 +55,8 @@
           <label class="form-label" for="login-username">Username atau Email</label>
           <div class="input-wrapper">
             <span class="input-icon"><i data-lucide="user" style="width: 16px;"></i></span>
-            <input type="text" id="login-username" class="form-control" placeholder="Masukkan username / email" required autocomplete="username">
+            <input type="text" id="login-username" class="form-control" placeholder="Masukkan username / email" required
+              autocomplete="username">
           </div>
         </div>
 
@@ -58,8 +64,10 @@
           <label class="form-label" for="login-password">Kata Sandi (Password)</label>
           <div class="input-wrapper">
             <span class="input-icon"><i data-lucide="lock" style="width: 16px;"></i></span>
-            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
-            <button type="button" class="toggle-password" onclick="window.app.togglePasswordVisibility('login-password')">
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required
+              autocomplete="current-password">
+            <button type="button" class="toggle-password"
+              onclick="window.app.togglePasswordVisibility('login-password')">
               <i data-lucide="eye" id="icon-eye-login" style="width: 16px;"></i>
             </button>
           </div>
@@ -84,7 +92,7 @@
        2. MAIN APPLICATION SHELL (Single Page Application)
        ========================================================================= -->
   <div id="app-shell" class="app-container" style="display: none;">
-    
+
     <!-- Sidebar Navigation -->
     <aside id="main-sidebar" class="sidebar">
       <div class="sidebar-header">
@@ -161,7 +169,7 @@
 
     <!-- Main Wrapper -->
     <div class="main-wrapper">
-      
+
       <!-- Top Navigation Bar -->
       <header class="topbar">
         <div class="topbar-title">
@@ -178,13 +186,16 @@
           </div>
 
           <!-- Theme Toggle Button -->
-          <button id="btn-theme-toggle" class="btn-icon theme-toggle-btn" title="Ubah Mode Terang / Gelap" onclick="window.app.toggleTheme()">
+          <button id="btn-theme-toggle" class="btn-icon theme-toggle-btn" title="Ubah Mode Terang / Gelap"
+            onclick="window.app.toggleTheme()">
             <i data-lucide="sun" class="icon-theme-sun" style="width: 16px; display: none;"></i>
             <i data-lucide="moon" class="icon-theme-moon" style="width: 16px;"></i>
           </button>
 
           <!-- User Role Indicator (Read-only Info) -->
-          <span id="topbar-user-role" class="user-role-badge role-admin" style="font-size: 12px; padding: 6px 12px; border-radius: 20px; font-weight: 700; letter-spacing: 0.5px;">Role: ADMIN</span>
+          <span id="topbar-user-role" class="user-role-badge role-admin"
+            style="font-size: 12px; padding: 6px 12px; border-radius: 20px; font-weight: 700; letter-spacing: 0.5px;">Role:
+            ADMIN</span>
         </div>
       </header>
 
@@ -195,7 +206,7 @@
              VIEW 3.1: DASHBOARD ARMADA (Section 3.1)
              =================================================================== -->
         <section id="view-dashboard-armada" class="view-section active">
-          
+
           <!-- AI Insights Card (Section 4 PRD) -->
           <div class="ai-insight-widget">
             <div class="ai-widget-header">
@@ -216,7 +227,8 @@
                 <div class="ai-block-heading heading-summary">
                   <i data-lucide="file-text" style="width: 14px;"></i> Executive Summary
                 </div>
-                <p class="ai-text" id="ai-summary-armada">Klik "Generate AI Insight" untuk menghasilkan analisis eksekutif otomatis berbasis data armada terfilter.</p>
+                <p class="ai-text" id="ai-summary-armada">Klik "Generate AI Insight" untuk menghasilkan analisis
+                  eksekutif otomatis berbasis data armada terfilter.</p>
               </div>
               <div class="ai-card-block">
                 <div class="ai-block-heading heading-anomaly">
@@ -321,7 +333,7 @@
 
           <!-- Charts Row 1: Progress Bar Jenis Armada & Bar Chart Depo Distribution -->
           <div class="chart-grid">
-            
+
             <!-- Progress Bar: Persentase Jenis Armada (Section 3.1) -->
             <div class="card-box">
               <div class="card-box-header">
@@ -363,7 +375,7 @@
              VIEW 3.2: DASHBOARD ARMADA STANDBY (Section 3.2)
              =================================================================== -->
         <section id="view-dashboard-standby" class="view-section">
-          
+
           <!-- AI Insights Card -->
           <div class="ai-insight-widget">
             <div class="ai-widget-header">
@@ -384,7 +396,8 @@
                 <div class="ai-block-heading heading-summary">
                   <i data-lucide="file-text" style="width: 14px;"></i> Executive Summary
                 </div>
-                <p class="ai-text" id="ai-summary-standby">Klik "Generate AI Insight" untuk menganalisis tren armada standby, KIR, dan perbaikan.</p>
+                <p class="ai-text" id="ai-summary-standby">Klik "Generate AI Insight" untuk menganalisis tren armada
+                  standby, KIR, dan perbaikan.</p>
               </div>
               <div class="ai-card-block">
                 <div class="ai-block-heading heading-anomaly">
@@ -431,8 +444,10 @@
             <div class="filter-group">
               <label class="filter-label">Date Range (Mulai s/d Selesai)</label>
               <div style="display: flex; gap: 8px;">
-                <input type="date" id="filter-standby-start" class="filter-input" value="2026-10-14" onchange="window.app.refreshStandbyDashboard()">
-                <input type="date" id="filter-standby-end" class="filter-input" value="2026-10-19" onchange="window.app.refreshStandbyDashboard()">
+                <input type="date" id="filter-standby-start" class="filter-input" value="2026-10-14"
+                  onchange="window.app.refreshStandbyDashboard()">
+                <input type="date" id="filter-standby-end" class="filter-input" value="2026-10-19"
+                  onchange="window.app.refreshStandbyDashboard()">
               </div>
             </div>
 
@@ -485,7 +500,8 @@
             <div class="card-box-header">
               <div>
                 <h4 class="card-box-title">Tabel Matriks 1: Summary Standby by Depo</h4>
-                <p style="font-size: 11.5px; color: var(--text-dim);">Arahkan kursor pada angka untuk rincian Standby, KIR, dan Perbaikan.</p>
+                <p style="font-size: 11.5px; color: var(--text-dim);">Arahkan kursor pada angka untuk rincian Standby,
+                  KIR, dan Perbaikan.</p>
               </div>
             </div>
             <div class="matrix-container" id="matrix-standby-depo-container">
@@ -516,7 +532,7 @@
              VIEW 3.3: DASHBOARD MUATAN ARMADA (Section 3.3)
              =================================================================== -->
         <section id="view-dashboard-muatan" class="view-section">
-          
+
           <!-- AI Insights Card -->
           <div class="ai-insight-widget">
             <div class="ai-widget-header">
@@ -537,7 +553,8 @@
                 <div class="ai-block-heading heading-summary">
                   <i data-lucide="file-text" style="width: 14px;"></i> Executive Summary
                 </div>
-                <p class="ai-text" id="ai-summary-muatan">Klik "Generate AI Insight" untuk menganalisis muatan keluar (BKB) vs retur (BTB).</p>
+                <p class="ai-text" id="ai-summary-muatan">Klik "Generate AI Insight" untuk menganalisis muatan keluar
+                  (BKB) vs retur (BTB).</p>
               </div>
               <div class="ai-card-block">
                 <div class="ai-block-heading heading-anomaly">
@@ -563,8 +580,10 @@
             <div class="filter-group">
               <label class="filter-label">Date Range</label>
               <div style="display: flex; gap: 8px;">
-                <input type="date" id="filter-muatan-start" class="filter-input" value="2026-10-14" onchange="window.app.refreshMuatanDashboard()">
-                <input type="date" id="filter-muatan-end" class="filter-input" value="2026-10-19" onchange="window.app.refreshMuatanDashboard()">
+                <input type="date" id="filter-muatan-start" class="filter-input" value="2026-10-14"
+                  onchange="window.app.refreshMuatanDashboard()">
+                <input type="date" id="filter-muatan-end" class="filter-input" value="2026-10-19"
+                  onchange="window.app.refreshMuatanDashboard()">
               </div>
             </div>
 
@@ -610,8 +629,10 @@
                 <span class="metric-title">Muatan Keluar (BKB)</span>
                 <div class="metric-icon blue"><i data-lucide="arrow-up-right" style="width: 18px;"></i></div>
               </div>
-              <div class="metric-value"><span id="card-muatan-box">1,240</span> <span style="font-size: 14px; font-weight: normal; color: var(--text-dim);">Box</span></div>
-              <div class="metric-sub"><span id="card-muatan-jugs">1,075</span> Jugs (Rata-rata: <span id="card-muatan-avg-box">207</span> Box / <span id="card-muatan-avg-jugs">179</span> Jugs)</div>
+              <div class="metric-value"><span id="card-muatan-box">1,240</span> <span
+                  style="font-size: 14px; font-weight: normal; color: var(--text-dim);">Box</span></div>
+              <div class="metric-sub"><span id="card-muatan-jugs">1,075</span> Jugs (Rata-rata: <span
+                  id="card-muatan-avg-box">207</span> Box / <span id="card-muatan-avg-jugs">179</span> Jugs)</div>
             </div>
 
             <div class="metric-card">
@@ -619,8 +640,10 @@
                 <span class="metric-title">Muatan Retur (BTB)</span>
                 <div class="metric-icon amber"><i data-lucide="arrow-down-left" style="width: 18px;"></i></div>
               </div>
-              <div class="metric-value"><span id="card-retur-box">35</span> <span style="font-size: 14px; font-weight: normal; color: var(--text-dim);">Box</span></div>
-              <div class="metric-sub"><span id="card-retur-jugs">840</span> Jugs Retur (Rata-rata: <span id="card-retur-avg-box">6</span> Box / <span id="card-retur-avg-jugs">140</span> Jugs)</div>
+              <div class="metric-value"><span id="card-retur-box">35</span> <span
+                  style="font-size: 14px; font-weight: normal; color: var(--text-dim);">Box</span></div>
+              <div class="metric-sub"><span id="card-retur-jugs">840</span> Jugs Retur (Rata-rata: <span
+                  id="card-retur-avg-box">6</span> Box / <span id="card-retur-avg-jugs">140</span> Jugs)</div>
             </div>
           </div>
 
@@ -687,7 +710,8 @@
         <section id="view-master-armada" class="view-section">
           <div class="master-header-actions">
             <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 480px;">
-              <input type="text" id="search-master-armada" class="form-control" placeholder="Cari nopol, driver, depo, jenis armada..." oninput="window.app.renderMasterArmadaTable()">
+              <input type="text" id="search-master-armada" class="form-control"
+                placeholder="Cari nopol, driver, depo, jenis armada..." oninput="window.app.renderMasterArmadaTable()">
             </div>
             <div style="display: flex; gap: 10px;">
               <button class="btn-outline" onclick="window.app.exportMasterArmada()">
@@ -729,7 +753,8 @@
         <section id="view-master-standby" class="view-section">
           <div class="master-header-actions">
             <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 480px;">
-              <input type="text" id="search-master-standby" class="form-control" placeholder="Cari Doc ID, driver, nopol..." oninput="window.app.renderMasterStandbyTable()">
+              <input type="text" id="search-master-standby" class="form-control"
+                placeholder="Cari Doc ID, driver, nopol..." oninput="window.app.renderMasterStandbyTable()">
             </div>
             <div style="display: flex; gap: 10px;">
               <button class="btn-outline" onclick="window.app.exportMasterStandby()">
@@ -771,13 +796,14 @@
           <div style="margin-bottom: 20px;">
             <h3 style="font-size: 16px; font-weight: 700;">Import Dual Excel (BKB & BTB)</h3>
             <p style="font-size: 13px; color: var(--text-muted);">
-              Sistem secara otomatis menyisipkan Kolom A dengan identifier <code>Jenis_Muatan</code> ("BKB" atau "BTB") dan menyimpan data pada tabel <code>DB_Muatan</code>.
+              Sistem secara otomatis menyisipkan Kolom A dengan identifier <code>Jenis_Muatan</code> ("BKB" atau "BTB")
+              dan menyimpan data pada tabel <code>DB_Muatan</code>.
             </p>
           </div>
 
           <!-- Dual Upload Cards -->
           <div class="dual-import-grid">
-            
+
             <!-- Card 1: BKB -->
             <div class="upload-card">
               <div class="upload-card-header">
@@ -785,13 +811,15 @@
                   <h4 style="font-size: 15px; font-weight: 700; color: #38BDF8;">Area 1: Upload File BKB</h4>
                   <span style="font-size: 12px; color: var(--text-dim);">Bukti Keluar Barang (Muatan Reguler)</span>
                 </div>
-                <button class="btn-outline" style="padding: 6px 10px; font-size: 11px;" onclick="window.dataStore.downloadBkbTemplate()">
+                <button class="btn-outline" style="padding: 6px 10px; font-size: 11px;"
+                  onclick="window.dataStore.downloadBkbTemplate()">
                   <i data-lucide="file-spreadsheet" style="width: 14px;"></i> Template BKB
                 </button>
               </div>
 
               <div class="upload-dropzone" id="dropzone-bkb" onclick="document.getElementById('file-bkb').click()">
-                <input type="file" id="file-bkb" accept=".xlsx,.xls,.csv" style="display: none;" onchange="window.app.handleFileSelect(event, 'BKB')">
+                <input type="file" id="file-bkb" accept=".xlsx,.xls,.csv" style="display: none;"
+                  onchange="window.app.handleFileSelect(event, 'BKB')">
                 <i data-lucide="cloud-upload" class="upload-icon"></i>
                 <div class="upload-text-title">Pilih atau Drag File Excel BKB (.xlsx)</div>
                 <div class="upload-text-sub">Sistem otomatis mengisi Jenis_Muatan = "BKB"</div>
@@ -803,15 +831,18 @@
               <div class="upload-card-header">
                 <div>
                   <h4 style="font-size: 15px; font-weight: 700; color: #10B981;">Area 2: Upload File BTB</h4>
-                  <span style="font-size: 12px; color: var(--text-dim);">Bukti Terima Barang (Muatan Retur / Balikan)</span>
+                  <span style="font-size: 12px; color: var(--text-dim);">Bukti Terima Barang (Muatan Retur /
+                    Balikan)</span>
                 </div>
-                <button class="btn-outline" style="padding: 6px 10px; font-size: 11px;" onclick="window.dataStore.downloadBtbTemplate()">
+                <button class="btn-outline" style="padding: 6px 10px; font-size: 11px;"
+                  onclick="window.dataStore.downloadBtbTemplate()">
                   <i data-lucide="file-spreadsheet" style="width: 14px;"></i> Template BTB
                 </button>
               </div>
 
               <div class="upload-dropzone" id="dropzone-btb" onclick="document.getElementById('file-btb').click()">
-                <input type="file" id="file-btb" accept=".xlsx,.xls,.csv" style="display: none;" onchange="window.app.handleFileSelect(event, 'BTB')">
+                <input type="file" id="file-btb" accept=".xlsx,.xls,.csv" style="display: none;"
+                  onchange="window.app.handleFileSelect(event, 'BTB')">
                 <i data-lucide="cloud-upload" class="upload-icon" style="color: var(--accent-emerald);"></i>
                 <div class="upload-text-title">Pilih atau Drag File Excel BTB (.xlsx)</div>
                 <div class="upload-text-sub">Sistem otomatis mengisi Jenis_Muatan = "BTB"</div>
@@ -861,7 +892,8 @@
           <div class="master-header-actions">
             <div>
               <h3 style="font-size: 16px; font-weight: 700;">Manajemen Pengguna & Hak Akses (RBAC)</h3>
-              <p style="font-size: 13px; color: var(--text-muted);">Kelola data akun pengguna, role kewenangan, dan status login.</p>
+              <p style="font-size: 13px; color: var(--text-muted);">Kelola data akun pengguna, role kewenangan, dan
+                status login.</p>
             </div>
             <button class="btn-primary" style="width: auto;" onclick="window.app.openUserModal()">
               <i data-lucide="user-plus" style="width: 14px;"></i> Tambah User
@@ -914,21 +946,25 @@
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
-                    <td><span class="user-role-badge role-admin">Admin</span> <span class="user-role-badge role-operator">Operator</span> <span class="user-role-badge role-viewer">Viewer</span></td>
+                    <td><span class="user-role-badge role-admin">Admin</span> <span
+                        class="user-role-badge role-operator">Operator</span> <span
+                        class="user-role-badge role-viewer">Viewer</span></td>
                   </tr>
                   <tr>
                     <td>Master Armada & Standby</td>
                     <td>Ya (Modal Pop-up)</td>
                     <td>-</td>
                     <td>Ya (.xlsx)</td>
-                    <td><span class="user-role-badge role-admin">Admin</span> <span class="user-role-badge role-operator">Operator</span></td>
+                    <td><span class="user-role-badge role-admin">Admin</span> <span
+                        class="user-role-badge role-operator">Operator</span></td>
                   </tr>
                   <tr>
                     <td>Master Muatan</td>
                     <td>Tidak (Upload Only)</td>
                     <td>Ya (Dual UI: BKB & BTB)</td>
                     <td>Ya (.xlsx)</td>
-                    <td><span class="user-role-badge role-admin">Admin</span> <span class="user-role-badge role-operator">Operator</span></td>
+                    <td><span class="user-role-badge role-admin">Admin</span> <span
+                        class="user-role-badge role-operator">Operator</span></td>
                   </tr>
                   <tr>
                     <td>Manajemen User & Konfigurasi</td>
@@ -947,8 +983,9 @@
              VIEW: PENGATURAN & GOOGLE APPS SCRIPT SYNC
              =================================================================== -->
         <section id="view-settings" class="view-section">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
-            
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+
             <!-- GAS Backend Connection Card -->
             <div class="card-box">
               <div class="card-box-header">
@@ -956,11 +993,13 @@
                 <i data-lucide="sheet" style="color: #10B981;"></i>
               </div>
               <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">
-                Anda dapat menghubungkan sistem ini langsung ke Web App Google Apps Script yang terpasang di Google Sheets Anda. Kode backend siap pakai tersedia di folder <code>gas/Code.gs</code>.
+                Anda dapat menghubungkan sistem ini langsung ke Web App Google Apps Script yang terpasang di Google
+                Sheets Anda. Kode backend siap pakai tersedia di folder <code>gas/Code.gs</code>.
               </p>
               <div class="form-group">
                 <label class="form-label" for="setting-gas-url">Google Apps Script Web App URL</label>
-                <input type="url" id="setting-gas-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
+                <input type="url" id="setting-gas-url" class="form-control"
+                  placeholder="https://script.google.com/macros/s/.../exec">
               </div>
               <div class="form-group">
                 <label class="form-label">Mode Operasi Data</label>
@@ -981,7 +1020,8 @@
                 <i data-lucide="sparkles" style="color: #8B5CF6;"></i>
               </div>
               <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">
-                Opsional: Masukkan API Key Google Gemini Anda untuk menggunakan model <code>gemini-1.5-flash</code> langsung. Bila kosong, sistem otomatis menggunakan Smart Offline Analytics Engine.
+                Opsional: Masukkan API Key Google Gemini Anda untuk menggunakan model <code>gemini-1.5-flash</code>
+                langsung. Bila kosong, sistem otomatis menggunakan Smart Offline Analytics Engine.
               </p>
               <div class="form-group">
                 <label class="form-label" for="setting-gemini-key">Gemini API Key</label>
@@ -1042,7 +1082,7 @@
       <form id="form-armada" onsubmit="window.app.handleArmadaFormSubmit(event)">
         <div class="modal-body">
           <input type="hidden" id="armada-vehicle-id">
-          
+
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label">Nama Perusahaan (PT)</label>
@@ -1137,7 +1177,7 @@
       <form id="form-standby" onsubmit="window.app.handleStandbyFormSubmit(event)">
         <div class="modal-body">
           <input type="hidden" id="standby-doc-id">
-          
+
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label">Tanggal Kejadian</label>
@@ -1155,7 +1195,8 @@
 
           <div class="form-group">
             <label class="form-label">Pilih Unit Armada</label>
-            <select id="standby-armada-select" class="form-control" onchange="window.app.onStandbyArmadaSelected(this.value)" required>
+            <select id="standby-armada-select" class="form-control"
+              onchange="window.app.onStandbyArmadaSelected(this.value)" required>
               <option value="">-- Pilih Armada --</option>
             </select>
           </div>
@@ -1218,7 +1259,8 @@
 
           <div class="form-group">
             <label class="form-label">Kata Sandi (Password)</label>
-            <input type="password" id="user-password" class="form-control" placeholder="Kosongkan bila tidak mengubah password">
+            <input type="password" id="user-password" class="form-control"
+              placeholder="Kosongkan bila tidak mengubah password">
           </div>
 
           <div class="form-grid-2">
@@ -1259,4 +1301,5 @@
   <script src="js/ai_service.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
