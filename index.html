@@ -1179,67 +1179,109 @@
   <!-- =========================================================================
        MODAL 2: ADD / EDIT STANDBY (Section 5.1 Modal Pop-up)
        ========================================================================= -->
+  <!-- =========================================================================
+       MODAL 2: ADD / EDIT STANDBY (Section 5.1 Modal Pop-up)
+       ========================================================================= -->
   <div id="modal-standby" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box modal-standby-custom" style="max-width: 520px;">
       <div class="modal-header">
-        <h3 class="modal-title" id="modal-standby-title">Catat Armada Standby / Perawatan</h3>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="modal-icon-badge standby-icon-badge">
+            <i data-lucide="timer" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div>
+            <h3 class="modal-title" id="modal-standby-title">Tambah Dokumen Standby</h3>
+            <div style="font-size: 11.5px; color: var(--text-dim);" id="modal-standby-subtitle">Isi data armada standby baru</div>
+          </div>
+        </div>
         <button class="modal-close" onclick="window.app.closeModal('modal-standby')">
           <i data-lucide="x" style="width: 18px;"></i>
         </button>
       </div>
+
       <form id="form-standby" onsubmit="window.app.handleStandbyFormSubmit(event)">
-        <div class="modal-body">
+        <div class="modal-body" style="padding: 20px 24px;">
           <input type="hidden" id="standby-doc-id">
+          <input type="hidden" id="standby-pt">
+          <input type="hidden" id="standby-depo">
+          <input type="hidden" id="standby-driver">
+          <input type="hidden" id="standby-nopol">
+
+          <!-- Section 1: CARI ARMADA -->
+          <div class="modal-form-section-label">CARI ARMADA</div>
+
+          <div class="form-group" style="position: relative; margin-bottom: 16px;">
+            <label class="form-label">No. Polisi <span style="color: #EF4444;">*</span></label>
+            <div class="input-wrapper search-nopol-wrapper">
+              <i data-lucide="search" class="input-icon"></i>
+              <input type="text" id="standby-search-nopol" class="form-control search-nopol-input"
+                placeholder="Ketik nopol / driver / depo..." autocomplete="off"
+                oninput="window.app.filterStandbyArmada(this.value)"
+                onfocus="window.app.filterStandbyArmada(this.value)"
+                required>
+            </div>
+            
+            <!-- Floating Autocomplete / Search Results -->
+            <div id="standby-armada-results" class="standby-autocomplete-dropdown" style="display: none;"></div>
+          </div>
+
+          <!-- Armada Info Card Preview (Muncul setelah armada dipilih) -->
+          <div id="standby-armada-card" class="standby-summary-card" style="display: none;">
+            <div class="summary-card-row">
+              <div class="summary-card-item">
+                <i data-lucide="user" class="summary-icon"></i>
+                <span class="summary-label">Driver</span>
+                <span class="summary-value" id="card-val-driver">-</span>
+              </div>
+            </div>
+            <div class="summary-card-row">
+              <div class="summary-card-item">
+                <i data-lucide="warehouse" class="summary-icon"></i>
+                <span class="summary-label">Depo</span>
+                <span class="summary-value" id="card-val-depo">-</span>
+              </div>
+            </div>
+            <div class="summary-card-row">
+              <div class="summary-card-item">
+                <i data-lucide="building-2" class="summary-icon"></i>
+                <span class="summary-label">PT</span>
+                <span class="summary-value" id="card-val-pt">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: STATUS & TANGGAL -->
+          <div class="modal-form-section-label" style="margin-top: 20px;">STATUS & TANGGAL</div>
 
           <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Tanggal Kejadian</label>
-              <input type="date" id="standby-tanggal" class="form-control" required>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label">Status <span style="color: #EF4444;">*</span></label>
+              <div class="input-wrapper">
+                <i data-lucide="traffic-cone" class="input-icon"></i>
+                <select id="standby-status" class="form-control" required>
+                  <option value="Standby">Standby</option>
+                  <option value="KIR">KIR</option>
+                  <option value="Perbaikan">Perbaikan</option>
+                </select>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Status Unit</label>
-              <select id="standby-status" class="form-control" required>
-                <option value="Standby">Standby (Non-Aktif Rutin)</option>
-                <option value="KIR">KIR (Uji Berkala Kendaraan)</option>
-                <option value="Perbaikan">Perbaikan (Bengkel / Breakdown)</option>
-              </select>
+
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label">Tanggal <span style="color: #EF4444;">*</span></label>
+              <div class="input-wrapper">
+                <i data-lucide="calendar" class="input-icon"></i>
+                <input type="date" id="standby-tanggal" class="form-control" required>
+              </div>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Pilih Unit Armada</label>
-            <select id="standby-armada-select" class="form-control"
-              onchange="window.app.onStandbyArmadaSelected(this.value)" required>
-              <option value="">-- Pilih Armada --</option>
-            </select>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Nama PT</label>
-              <input type="text" id="standby-pt" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Nama Depo</label>
-              <input type="text" id="standby-depo" class="form-control" readonly>
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Nama Driver</label>
-              <input type="text" id="standby-driver" class="form-control" readonly>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Nomor Polisi</label>
-              <input type="text" id="standby-nopol" class="form-control" readonly>
-            </div>
-          </div>
         </div>
 
-        <div class="modal-footer">
+        <div class="modal-footer" style="padding: 16px 24px; display: flex; justify-content: flex-end; gap: 10px;">
           <button type="button" class="btn-outline" onclick="window.app.closeModal('modal-standby')">Batal</button>
-          <button type="submit" class="btn-primary" style="width: auto;">Simpan Data Standby</button>
+          <button type="submit" class="btn-primary" style="width: auto; background: #2563EB; border-color: #2563EB;">
+            <i data-lucide="save" style="width: 15px; margin-right: 4px;"></i> Simpan Dokumen
+          </button>
         </div>
       </form>
     </div>

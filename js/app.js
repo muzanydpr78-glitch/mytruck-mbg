@@ -50,6 +50,17 @@ class AppController {
     if (window.lucide) {
       window.lucide.createIcons();
     }
+
+    // 5. Close standby autocomplete dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      const resultsBox = document.getElementById("standby-armada-results");
+      const searchInput = document.getElementById("standby-search-nopol");
+      if (resultsBox && resultsBox.style.display !== "none") {
+        if (!resultsBox.contains(e.target) && e.target !== searchInput) {
+          resultsBox.style.display = "none";
+        }
+      }
+    });
   }
 
   // --- Auth & Session Views ---
@@ -793,54 +804,123 @@ class AppController {
 
     const modal = document.getElementById("modal-standby");
     const title = document.getElementById("modal-standby-title");
-    const select = document.getElementById("standby-armada-select");
+    const subtitle = document.getElementById("modal-standby-subtitle");
 
-    // Populate armada dropdown
-    const armadas = window.dataStore.getArmada();
-    select.innerHTML = '<option value="">-- Pilih Armada --</option>';
-    armadas.forEach(a => {
-      select.innerHTML += `<option value="${a.Vehicle_ID}">${a.Nopol} - ${a.Nama_Driver} (${a.Depo})</option>`;
-    });
+    // Reset dropdown search result
+    const resultsBox = document.getElementById("standby-armada-results");
+    if (resultsBox) {
+      resultsBox.innerHTML = "";
+      resultsBox.style.display = "none";
+    }
 
     if (docId) {
       const item = window.dataStore.getStandby().find(s => s.Document_ID === docId);
       if (!item) return;
-      title.textContent = `Edit Status Standby (${item.Document_ID})`;
+      if (title) title.textContent = "Edit Dokumen Standby";
+      if (subtitle) subtitle.textContent = `Perbarui status standby (${item.Document_ID})`;
       document.getElementById("standby-doc-id").value = item.Document_ID;
       document.getElementById("standby-tanggal").value = item.tanggal;
       document.getElementById("standby-status").value = item.Status;
-      document.getElementById("standby-pt").value = item.PT;
-      document.getElementById("standby-depo").value = item.Nama_Depo;
-      document.getElementById("standby-driver").value = item.Nama_Driver;
-      document.getElementById("standby-nopol").value = item.Nopol;
 
-      const matchingArmada = armadas.find(a => a.Nopol === item.Nopol);
-      if (matchingArmada) select.value = matchingArmada.Vehicle_ID;
+      this.selectStandbyArmada({
+        Nopol: item.Nopol,
+        Nama_Driver: item.Nama_Driver,
+        Depo: item.Nama_Depo,
+        PT: item.PT
+      });
     } else {
-      title.textContent = "Catat Armada Standby / KIR / Perbaikan";
+      if (title) title.textContent = "Tambah Dokumen Standby";
+      if (subtitle) subtitle.textContent = "Isi data armada standby baru";
       document.getElementById("form-standby").reset();
       document.getElementById("standby-doc-id").value = "";
       document.getElementById("standby-tanggal").value = new Date().toISOString().substring(0, 10);
+      document.getElementById("standby-status").value = "Standby";
+
+      // Clear hidden & search fields
+      document.getElementById("standby-search-nopol").value = "";
+      document.getElementById("standby-pt").value = "";
+      document.getElementById("standby-depo").value = "";
+      document.getElementById("standby-driver").value = "";
+      document.getElementById("standby-nopol").value = "";
+
+      const card = document.getElementById("standby-armada-card");
+      if (card) card.style.display = "none";
     }
 
     modal.classList.add("active");
+    if (window.lucide) window.lucide.createIcons();
   }
 
-  onStandbyArmadaSelected(vehicleId) {
-    if (!vehicleId) return;
-    const a = window.dataStore.getArmada().find(item => item.Vehicle_ID === vehicleId);
-    if (a) {
-      document.getElementById("standby-pt").value = a.PT;
-      document.getElementById("standby-depo").value = a.Depo;
-      document.getElementById("standby-driver").value = a.Nama_Driver;
-      document.getElementById("standby-nopol").value = a.Nopol;
+  filterStandbyArmada(keyword) {
+    const resultsBox = document.getElementById("standby-armada-results");
+    if (!resultsBox) return;
+
+    const armadas = window.dataStore.getArmada() || [];
+    const q = (keyword || "").toLowerCase().trim();
+
+    const matches = armadas.filter(a => {
+      const nopol = (a.Nopol || "").toLowerCase();
+      const driver = (a.Nama_Driver || "").toLowerCase();
+      const depo = (a.Depo || "").toLowerCase();
+      const driverId = (a.Driver_ID || "").toLowerCase();
+      return nopol.includes(q) || driver.includes(q) || depo.includes(q) || driverId.includes(q);
+    });
+
+    if (matches.length === 0) {
+      resultsBox.innerHTML = '<div style="padding: 12px; font-size: 12px; color: var(--text-dim); text-align: center;">Armada tidak ditemukan</div>';
+      resultsBox.style.display = "block";
+      return;
     }
+
+    resultsBox.innerHTML = matches.slice(0, 8).map(a => `
+      <div class="autocomplete-item" onclick="window.app.selectStandbyArmada(${JSON.stringify(a).replace(/"/g, '&quot;')})">
+        <span class="autocomplete-nopol">${a.Nopol}</span>
+        <div class="autocomplete-meta">
+          ${a.Nama_Driver} <span class="meta-tag">${a.Tipe_Pengiriman || a.Tipe_Muatan || 'DEL'}</span> · ${a.Driver_ID || '-'} · ${a.Depo}
+        </div>
+      </div>
+    `).join("");
+
+    resultsBox.style.display = "block";
+  }
+
+  selectStandbyArmada(armada) {
+    if (!armada) return;
+
+    document.getElementById("standby-search-nopol").value = armada.Nopol || "";
+    document.getElementById("standby-nopol").value = armada.Nopol || "";
+    document.getElementById("standby-driver").value = armada.Nama_Driver || "";
+    document.getElementById("standby-depo").value = armada.Depo || armada.Nama_Depo || "";
+    document.getElementById("standby-pt").value = armada.PT || "";
+
+    // Populate info summary card
+    const card = document.getElementById("standby-armada-card");
+    const valDriver = document.getElementById("card-val-driver");
+    const valDepo = document.getElementById("card-val-depo");
+    const valPt = document.getElementById("card-val-pt");
+
+    if (valDriver) valDriver.textContent = armada.Nama_Driver || "-";
+    if (valDepo) valDepo.textContent = armada.Depo || armada.Nama_Depo || "-";
+    if (valPt) valPt.textContent = armada.PT || "-";
+
+    if (card) card.style.display = "flex";
+
+    // Hide dropdown
+    const resultsBox = document.getElementById("standby-armada-results");
+    if (resultsBox) resultsBox.style.display = "none";
+    if (window.lucide) window.lucide.createIcons();
   }
 
   handleStandbyFormSubmit(e) {
     e.preventDefault();
     const docId = document.getElementById("standby-doc-id").value;
+    const nopol = document.getElementById("standby-nopol").value.trim();
     const user = window.authService.getCurrentUser()?.Username || "Operator";
+
+    if (!nopol) {
+      this.showToast("Pilih Armada", "Silakan cari dan pilih unit armada dari daftar.", "error");
+      return;
+    }
 
     const payload = {
       tanggal: document.getElementById("standby-tanggal").value,
@@ -848,7 +928,7 @@ class AppController {
       PT: document.getElementById("standby-pt").value,
       Nama_Depo: document.getElementById("standby-depo").value,
       Nama_Driver: document.getElementById("standby-driver").value,
-      Nopol: document.getElementById("standby-nopol").value
+      Nopol: nopol
     };
 
     if (docId) payload.Document_ID = docId;
