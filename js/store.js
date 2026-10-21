@@ -90,30 +90,41 @@ class DataStore {
 
   async syncFromGas() {
     const settings = this.getSettings();
-    if (!settings.gasUrl) return;
+    if (!settings.gasUrl || settings.dataMode === "LOCAL") {
+      return { success: false, reason: "LOCAL_MODE" };
+    }
 
     try {
+      let syncedCount = 0;
       const fetchSheet = async (action, key) => {
         try {
           const res = await fetch(`${settings.gasUrl}?action=${action}`);
           const json = await res.json();
           if (json.status === "success" && Array.isArray(json.data) && json.data.length > 0) {
             this.setItem(key, json.data);
+            syncedCount += json.data.length;
+            return true;
           }
+          return false;
         } catch (err) {
           console.warn(`Gagal sync ${action}:`, err);
+          return false;
         }
       };
 
-      await Promise.all([
+      const results = await Promise.all([
         fetchSheet("getUsers", this.STORAGE_KEYS.USERS),
         fetchSheet("getArmada", this.STORAGE_KEYS.ARMADA),
         fetchSheet("getStandby", this.STORAGE_KEYS.STANDBY),
         fetchSheet("getMuatan", this.STORAGE_KEYS.MUATAN),
         fetchSheet("getLogs", this.STORAGE_KEYS.LOGS)
       ]);
+
+      const anySuccess = results.some(r => r === true);
+      return { success: anySuccess, syncedCount };
     } catch (e) {
       console.warn("Error running syncFromGas:", e);
+      return { success: false, error: e };
     }
   }
 
