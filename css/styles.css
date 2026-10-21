@@ -1745,10 +1745,9 @@ body {
   .system-status-indicator {
     display: none; /* Hide status text on mobile to save space */
   }
-  #quick-role-select {
-    font-size: 11px;
-    padding: 4px 8px;
-    max-width: 100px;
+  #topbar-user-role {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
   }
 
   /* Content area padding */
