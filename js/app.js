@@ -57,9 +57,12 @@ class AppController {
       roleBadge.textContent = user.Role.toUpperCase();
       roleBadge.className = `user-role-badge role-${user.Role.toLowerCase()}`;
 
-      // Update quick switch role dropdown
-      const roleSelect = document.getElementById("quick-role-select");
-      if (roleSelect) roleSelect.value = user.Role;
+      // Update topbar role info badge (read-only)
+      const topbarRoleBadge = document.getElementById("topbar-user-role");
+      if (topbarRoleBadge) {
+        topbarRoleBadge.textContent = `Role: ${user.Role.toUpperCase()}`;
+        topbarRoleBadge.className = `user-role-badge role-${user.Role.toLowerCase()}`;
+      }
     }
 
     this.updateRbacUi();
