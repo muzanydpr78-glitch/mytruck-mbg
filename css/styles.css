@@ -779,6 +779,35 @@ body {
   color: #38BDF8;
 }
 
+.user-profile-badge.user-profile-interactive {
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.user-profile-badge.user-profile-interactive:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-profile-edit {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-profile-edit:hover {
+  color: #818CF8;
+  background: rgba(99, 102, 241, 0.15);
+}
+
 .btn-logout {
   background: none;
   border: none;

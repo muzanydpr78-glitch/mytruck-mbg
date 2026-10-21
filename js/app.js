@@ -1109,6 +1109,112 @@ class AppController {
   }
 
   // =========================================================================
+  // VIEW / MODAL: PENGATURAN PROFIL PRIBADI
+  // =========================================================================
+  openProfileModal() {
+    const user = window.authService.getCurrentUser();
+    if (!user) {
+      this.showToast("Peringatan", "Silakan login terlebih dahulu.", "warning");
+      return;
+    }
+
+    const modal = document.getElementById("modal-profile");
+    if (!modal) return;
+
+    // Header info
+    const avatarEl = document.getElementById("modal-profile-avatar");
+    const nameEl = document.getElementById("modal-profile-header-name");
+    const roleEl = document.getElementById("modal-profile-header-role");
+    const idEl = document.getElementById("modal-profile-header-id");
+
+    if (avatarEl) avatarEl.textContent = (user.Username || "U").charAt(0).toUpperCase();
+    if (nameEl) nameEl.textContent = user.Username || "Pengguna";
+    if (roleEl) {
+      roleEl.textContent = (user.Role || "USER").toUpperCase();
+      roleEl.className = `user-role-badge role-${(user.Role || "user").toLowerCase()}`;
+    }
+    if (idEl) idEl.textContent = user.User_ID || "";
+
+    // Form inputs
+    document.getElementById("profile-username").value = user.Username || "";
+    document.getElementById("profile-email").value = user.Email || "";
+    document.getElementById("profile-current-password").value = "";
+    document.getElementById("profile-new-password").value = "";
+    document.getElementById("profile-confirm-password").value = "";
+
+    // Reset password field visibility to password
+    ["profile-current-password", "profile-new-password", "profile-confirm-password"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.type = "password";
+    });
+
+    modal.classList.add("active");
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  async handleProfileFormSubmit(e) {
+    e.preventDefault();
+    const username = document.getElementById("profile-username").value.trim();
+    const email = document.getElementById("profile-email").value.trim();
+    const currentPassword = document.getElementById("profile-current-password").value;
+    const newPassword = document.getElementById("profile-new-password").value;
+    const confirmPassword = document.getElementById("profile-confirm-password").value;
+
+    if (!username) {
+      this.showToast("Username Kosong", "Nama pengguna tidak boleh kosong.", "error");
+      return;
+    }
+
+    if (!email) {
+      this.showToast("Email Kosong", "Alamat email tidak boleh kosong.", "error");
+      return;
+    }
+
+    // Validation if user wants to change password
+    if (newPassword || confirmPassword || currentPassword) {
+      if (!currentPassword) {
+        this.showToast("Verifikasi Diperlukan", "Masukkan kata sandi saat ini untuk menyetujui perubahan kata sandi.", "error");
+        return;
+      }
+      if (newPassword.length < 4) {
+        this.showToast("Kata Sandi Terlalu Pendek", "Kata sandi baru minimal 4 karakter.", "error");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        this.showToast("Kata Sandi Tidak Cocok", "Kata sandi baru dan konfirmasi kata sandi tidak sama.", "error");
+        return;
+      }
+    }
+
+    const result = await window.authService.updateProfile({
+      Username: username,
+      Email: email,
+      currentPassword: currentPassword,
+      newPassword: newPassword
+    });
+
+    if (!result.success) {
+      this.showToast("Gagal Memperbarui Profil", result.message, "error");
+      return;
+    }
+
+    // Update UI elements in App Shell
+    const updatedUser = result.user;
+    const sidebarName = document.getElementById("sidebar-user-name");
+    const sidebarAvatar = document.getElementById("sidebar-user-avatar");
+    if (sidebarName) sidebarName.textContent = updatedUser.Username;
+    if (sidebarAvatar) sidebarAvatar.textContent = updatedUser.Username.charAt(0).toUpperCase();
+
+    // Re-render user table if user management view is active
+    if (this.currentViewId === "view-user-management" && typeof this.renderUsersTable === "function") {
+      this.renderUsersTable();
+    }
+
+    this.closeModal("modal-profile");
+    this.showToast("Profil Berhasil Diperbarui", "Nama dan kredensial akun Anda telah berhasil diperbarui.", "success");
+  }
+
+  // =========================================================================
   // VIEW: SETTINGS & GAS SYNC
   // =========================================================================
   loadSettingsForm() {

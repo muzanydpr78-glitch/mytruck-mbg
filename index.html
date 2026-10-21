@@ -151,14 +151,20 @@
 
       <!-- Sidebar User Profile Footer -->
       <div class="sidebar-footer">
-        <div class="user-profile-badge">
+        <div class="user-profile-badge user-profile-interactive" onclick="window.app.openProfileModal()"
+          title="Klik untuk edit profil & kata sandi">
           <div class="user-avatar" id="sidebar-user-avatar">A</div>
           <div class="user-details">
             <div class="user-name" id="sidebar-user-name">Administrator</div>
             <span class="user-role-badge role-admin" id="sidebar-user-role">ADMIN</span>
           </div>
-          <button class="btn-logout" title="Keluar / Logout" onclick="window.app.handleLogout()">
-            <i data-lucide="log-out" style="width: 18px;"></i>
+          <button type="button" class="btn-profile-edit" title="Pengaturan Profil"
+            onclick="event.stopPropagation(); window.app.openProfileModal()">
+            <i data-lucide="user-cog" style="width: 17px;"></i>
+          </button>
+          <button class="btn-logout" title="Keluar / Logout"
+            onclick="event.stopPropagation(); window.app.handleLogout()">
+            <i data-lucide="log-out" style="width: 17px;"></i>
           </button>
         </div>
       </div>
@@ -184,6 +190,12 @@
             <span class="status-pulse"></span>
             <span id="system-status-text">Menghubungkan ke GAS...</span>
           </div>
+
+          <!-- Profile Settings Button -->
+          <button id="btn-profile-toggle" class="btn-icon" title="Pengaturan Profil Saya"
+            onclick="window.app.openProfileModal()">
+            <i data-lucide="user" style="width: 16px;"></i>
+          </button>
 
           <!-- Theme Toggle Button -->
           <button id="btn-theme-toggle" class="btn-icon theme-toggle-btn" title="Ubah Mode Terang / Gelap"
@@ -1285,6 +1297,128 @@
         <div class="modal-footer">
           <button type="button" class="btn-outline" onclick="window.app.closeModal('modal-user')">Batal</button>
           <button type="submit" class="btn-primary" style="width: auto;">Simpan Pengguna</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: USER PERSONAL PROFILE & PASSWORD SETTINGS
+       ========================================================================= -->
+  <div id="modal-profile" class="modal-overlay">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="modal-icon-badge"
+            style="width: 32px; height: 32px; border-radius: 8px; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: #818CF8;">
+            <i data-lucide="user-check" style="width: 18px;"></i>
+          </div>
+          <div>
+            <h3 class="modal-title">Pengaturan Profil Saya</h3>
+            <div style="font-size: 11px; color: var(--text-dim);">Ubah username, nama akun, atau perbarui kata sandi
+            </div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="window.app.closeModal('modal-profile')">
+          <i data-lucide="x" style="width: 18px;"></i>
+        </button>
+      </div>
+
+      <form id="form-user-profile" onsubmit="window.app.handleProfileFormSubmit(event)">
+        <div class="modal-body" style="padding-top: 18px;">
+
+          <!-- Profile Header Card -->
+          <div
+            style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 20px;">
+            <div class="user-avatar" id="modal-profile-avatar" style="width: 46px; height: 46px; font-size: 18px;">U
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 14px; font-weight: 700; color: var(--text-main);" id="modal-profile-header-name">
+                Username</div>
+              <div style="display: flex; gap: 8px; align-items: center; margin-top: 3px;">
+                <span class="user-role-badge" id="modal-profile-header-role">OPERATOR</span>
+                <span style="font-size: 11px; color: var(--text-dim);" id="modal-profile-header-id">USR-001</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nama Pengguna (Username)</label>
+            <div class="input-wrapper">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="profile-username" class="form-control" placeholder="Masukkan username baru"
+                required>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Nama ini akan dipakai saat Anda
+              masuk/login ke sistem.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Alamat Email</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="profile-email" class="form-control" placeholder="email@mytruck.co.id" required>
+            </div>
+          </div>
+
+          <div style="border-top: 1px dashed var(--border-subtle); margin: 20px 0 16px; padding-top: 14px;">
+            <span
+              style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #818CF8; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="key-round" style="width: 14px;"></i> Ganti Kata Sandi (Opsional)
+            </span>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 2px;">Kosongkan jika tidak ingin mengubah
+              kata sandi Anda.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Kata Sandi Saat Ini</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="profile-current-password" class="form-control"
+                placeholder="Wajib diisi jika ingin ganti password">
+              <button type="button" class="btn-password-toggle"
+                onclick="window.app.togglePasswordVisibility('profile-current-password')"
+                style="position: absolute; right: 12px; background: none; border: none; color: var(--text-dim); cursor: pointer;">
+                <i data-lucide="eye" style="width: 16px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Kata Sandi Baru</label>
+              <div class="input-wrapper">
+                <i data-lucide="shield" class="input-icon"></i>
+                <input type="password" id="profile-new-password" class="form-control" placeholder="Min. 4 karakter">
+                <button type="button" class="btn-password-toggle"
+                  onclick="window.app.togglePasswordVisibility('profile-new-password')"
+                  style="position: absolute; right: 12px; background: none; border: none; color: var(--text-dim); cursor: pointer;">
+                  <i data-lucide="eye" style="width: 16px;"></i>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Konfirmasi Kata Sandi Baru</label>
+              <div class="input-wrapper">
+                <i data-lucide="shield-check" class="input-icon"></i>
+                <input type="password" id="profile-confirm-password" class="form-control"
+                  placeholder="Ulangi password baru">
+                <button type="button" class="btn-password-toggle"
+                  onclick="window.app.togglePasswordVisibility('profile-confirm-password')"
+                  style="position: absolute; right: 12px; background: none; border: none; color: var(--text-dim); cursor: pointer;">
+                  <i data-lucide="eye" style="width: 16px;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-outline" onclick="window.app.closeModal('modal-profile')">Batal</button>
+          <button type="submit" class="btn-primary" style="width: auto;">
+            <i data-lucide="save" style="width: 16px; margin-right: 6px;"></i> Simpan Perubahan Profil
+          </button>
         </div>
       </form>
     </div>

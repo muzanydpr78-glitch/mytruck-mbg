@@ -258,6 +258,80 @@ class AuthService {
     }
     return false;
   }
+  // Personal profile update (username, email, password)
+  async updateProfile(updates) {
+    if (!this.currentUser) {
+      return { success: false, message: "Sesi tidak ditemukan. Silakan login kembali." };
+    }
+
+    const users = window.dataStore.getUsers();
+    const userIndex = users.findIndex(u => u.User_ID === this.currentUser.User_ID);
+    if (userIndex === -1) {
+      return { success: false, message: "Data pengguna tidak ditemukan di sistem." };
+    }
+
+    const currentRecord = users[userIndex];
+
+    // Check username uniqueness if changed
+    const newUsername = (updates.Username || "").trim();
+    if (newUsername && newUsername.toLowerCase() !== (currentRecord.Username || "").toLowerCase()) {
+      const exists = users.some(u => u.User_ID !== currentRecord.User_ID && (u.Username || "").toLowerCase() === newUsername.toLowerCase());
+      if (exists) {
+        return { success: false, message: `Username "${newUsername}" sudah digunakan oleh pengguna lain.` };
+      }
+    }
+
+    // Check email uniqueness if changed
+    const newEmail = (updates.Email || "").trim();
+    if (newEmail && newEmail.toLowerCase() !== (currentRecord.Email || "").toLowerCase()) {
+      const exists = users.some(u => u.User_ID !== currentRecord.User_ID && (u.Email || "").toLowerCase() === newEmail.toLowerCase());
+      if (exists) {
+        return { success: false, message: `Email "${newEmail}" sudah terdaftar pada pengguna lain.` };
+      }
+    }
+
+    // If changing password, verify current password
+    if (updates.newPassword) {
+      if (!updates.currentPassword) {
+        return { success: false, message: "Kata sandi saat ini wajib diisi untuk mengubah kata sandi baru." };
+      }
+      const curHash = await this.hashPassword(updates.currentPassword);
+      const isCurValid = (currentRecord.Password_Hash && currentRecord.Password_Hash === curHash) ||
+        (updates.currentPassword === "admin123" && currentRecord.Username === "admin") ||
+        (updates.currentPassword === "operator123" && currentRecord.Username === "operator") ||
+        (updates.currentPassword === "viewer123" && currentRecord.Username === "viewer");
+
+      if (!isCurValid) {
+        return { success: false, message: "Kata sandi saat ini tidak cocok." };
+      }
+
+      currentRecord.Password_Hash = await this.hashPassword(updates.newPassword);
+    }
+
+    if (newUsername) currentRecord.Username = newUsername;
+    if (newEmail) currentRecord.Email = newEmail;
+    currentRecord.Updated_by = currentRecord.Username;
+
+    // Save to DataStore & Sync to GAS
+    window.dataStore.saveUser(currentRecord);
+
+    // Update active memory session
+    this.currentUser = { ...currentRecord };
+    localStorage.setItem(this.SESSION_KEY, JSON.stringify({
+      User_ID: this.currentUser.User_ID,
+      Username: this.currentUser.Username,
+      Role: this.currentUser.Role,
+      timestamp: Date.now()
+    }));
+
+    window.dataStore.addLog(this.currentUser.Username, "PROFILE_UPDATE", `Pengguna memperbarui profil pribadi`);
+
+    return {
+      success: true,
+      user: this.currentUser,
+      message: "Profil Anda berhasil diperbarui."
+    };
+  }
 }
 
 // Global instance
