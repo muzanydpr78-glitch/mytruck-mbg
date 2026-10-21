@@ -800,6 +800,31 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.2);
   padding: 5px 12px;
   border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.system-status-indicator.status-gas-connected {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34D399;
+}
+
+.system-status-indicator.status-syncing {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #A5B4FC;
+}
+
+.system-status-indicator.status-local {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.25);
+  color: var(--text-muted);
+}
+
+.system-status-indicator.status-error {
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.3);
+  color: #FDA4AF;
 }
 
 .status-pulse {
@@ -809,6 +834,23 @@ body {
   background: var(--accent-emerald);
   box-shadow: 0 0 8px var(--accent-emerald);
   animation: pulse 2s infinite;
+  transition: background 0.3s ease;
+}
+
+.system-status-indicator.status-syncing .status-pulse {
+  background: #6366F1;
+  box-shadow: 0 0 8px #6366F1;
+}
+
+.system-status-indicator.status-local .status-pulse {
+  background: #94A3B8;
+  box-shadow: 0 0 6px #94A3B8;
+  animation: none;
+}
+
+.system-status-indicator.status-error .status-pulse {
+  background: var(--accent-rose);
+  box-shadow: 0 0 8px var(--accent-rose);
 }
 
 @keyframes pulse {
