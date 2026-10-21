@@ -10,10 +10,25 @@ class AppController {
   }
 
   async init() {
-    // 0. Sync data from Google Sheets
-    await window.dataStore.syncFromGas();
+    // 0. Update initial connection indicator status
+    this.updateBackendStatusIndicator("syncing", "Menghubungkan ke GAS...");
 
-    // 0.1 Initialize Dark/Light Theme
+    // 0.1 Sync data from Google Sheets
+    const syncResult = await window.dataStore.syncFromGas();
+    if (syncResult && syncResult.success) {
+      this.updateBackendStatusIndicator("gas", "GAS Web App: Connected");
+    } else if (syncResult && syncResult.reason === "LOCAL_MODE") {
+      this.updateBackendStatusIndicator("local", "Storage: Local Mode");
+    } else {
+      const settings = window.dataStore.getSettings();
+      if (settings.dataMode === "GAS" && settings.gasUrl) {
+        this.updateBackendStatusIndicator("gas", "GAS Web App: Connected (Cached)");
+      } else {
+        this.updateBackendStatusIndicator("local", "Engine: Local Ready");
+      }
+    }
+
+    // 0.2 Initialize Dark/Light Theme
     this.initTheme();
 
     // 1. Check auto-login session
@@ -1103,17 +1118,31 @@ class AppController {
     document.getElementById("setting-gemini-key").value = s.geminiApiKey || "";
   }
 
+  updateBackendStatusIndicator(state, text) {
+    const statusPill = document.getElementById("system-status-text");
+    const container = statusPill ? statusPill.closest(".system-status-indicator") : null;
+    if (!statusPill) return;
+
+    if (text) statusPill.textContent = text;
+    if (container) {
+      container.classList.remove("status-gas-connected", "status-syncing", "status-local", "status-error");
+      if (state === "gas") container.classList.add("status-gas-connected");
+      else if (state === "syncing") container.classList.add("status-syncing");
+      else if (state === "error") container.classList.add("status-error");
+      else container.classList.add("status-local");
+    }
+  }
+
   saveBackendSettings() {
     const s = window.dataStore.getSettings();
     s.gasUrl = document.getElementById("setting-gas-url").value.trim();
     s.dataMode = document.getElementById("setting-data-mode").value;
     window.dataStore.saveSettings(s);
 
-    const statusPill = document.getElementById("system-status-text");
     if (s.dataMode === "GAS" && s.gasUrl) {
-      statusPill.textContent = "GAS Web App: Connected";
+      this.updateBackendStatusIndicator("gas", "GAS Web App: Connected");
     } else {
-      statusPill.textContent = "Engine: Local Ready";
+      this.updateBackendStatusIndicator("local", "Storage: Local Mode");
     }
 
     this.showToast("Pengaturan Disimpan", "Konfigurasi koneksi backend berhasil disimpan.", "success");
