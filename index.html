@@ -148,26 +148,6 @@
           <span>Konfigurasi & Logs</span>
         </a>
       </nav>
-
-      <!-- Sidebar User Profile Footer -->
-      <div class="sidebar-footer">
-        <div class="user-profile-badge user-profile-interactive" onclick="window.app.openProfileModal()"
-          title="Klik untuk edit profil & kata sandi">
-          <div class="user-avatar" id="sidebar-user-avatar">A</div>
-          <div class="user-details">
-            <div class="user-name" id="sidebar-user-name">Administrator</div>
-            <span class="user-role-badge role-admin" id="sidebar-user-role">ADMIN</span>
-          </div>
-          <button type="button" class="btn-profile-edit" title="Pengaturan Profil"
-            onclick="event.stopPropagation(); window.app.openProfileModal()">
-            <i data-lucide="user-cog" style="width: 17px;"></i>
-          </button>
-          <button class="btn-logout" title="Keluar / Logout"
-            onclick="event.stopPropagation(); window.app.handleLogout()">
-            <i data-lucide="log-out" style="width: 17px;"></i>
-          </button>
-        </div>
-      </div>
     </aside>
 
     <!-- Mobile Sidebar Backdrop/Overlay -->
@@ -191,12 +171,6 @@
             <span id="system-status-text">Menghubungkan ke GAS...</span>
           </div>
 
-          <!-- Profile Settings Button -->
-          <button id="btn-profile-toggle" class="btn-icon" title="Pengaturan Profil Saya"
-            onclick="window.app.openProfileModal()">
-            <i data-lucide="user" style="width: 16px;"></i>
-          </button>
-
           <!-- Theme Toggle Button -->
           <button id="btn-theme-toggle" class="btn-icon theme-toggle-btn" title="Ubah Mode Terang / Gelap"
             onclick="window.app.toggleTheme()">
@@ -204,10 +178,35 @@
             <i data-lucide="moon" class="icon-theme-moon" style="width: 16px;"></i>
           </button>
 
-          <!-- User Role Indicator (Read-only Info) -->
-          <span id="topbar-user-role" class="user-role-badge role-admin"
-            style="font-size: 12px; padding: 6px 12px; border-radius: 20px; font-weight: 700; letter-spacing: 0.5px;">Role:
-            ADMIN</span>
+          <!-- Topbar User Profile Dropdown (Pojok Kanan Atas) -->
+          <div class="topbar-user-dropdown-container">
+            <button id="btn-user-dropdown-toggle" class="topbar-user-btn" onclick="window.app.toggleUserDropdown(event)" title="Menu Akun">
+              <div class="user-avatar topbar-user-avatar" id="topbar-user-avatar">A</div>
+              <div class="topbar-user-info">
+                <span class="topbar-user-name" id="topbar-user-name">Administrator</span>
+                <span class="user-role-badge role-admin" id="topbar-user-role">ADMIN</span>
+              </div>
+              <i data-lucide="chevron-down" class="topbar-chevron-icon" style="width: 15px; height: 15px;"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div id="topbar-user-dropdown-menu" class="topbar-user-menu" style="display: none;">
+              <div class="topbar-menu-header">
+                <div class="menu-header-name" id="menu-header-name">Administrator</div>
+                <div class="menu-header-role" id="menu-header-role">Role: ADMIN</div>
+              </div>
+              <div class="topbar-menu-divider"></div>
+              <a class="topbar-menu-item" onclick="window.app.openProfileModal(); window.app.closeUserDropdown();">
+                <i data-lucide="user-cog" style="width: 16px; height: 16px;"></i>
+                <span>Pengaturan Profil</span>
+              </a>
+              <div class="topbar-menu-divider"></div>
+              <a class="topbar-menu-item item-logout" onclick="window.app.handleLogout(); window.app.closeUserDropdown();">
+                <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                <span>Keluar / Logout</span>
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 

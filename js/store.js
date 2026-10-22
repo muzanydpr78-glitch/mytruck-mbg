@@ -201,13 +201,16 @@ class DataStore {
   getArmada(filters = {}) {
     let list = this.getItem(this.STORAGE_KEYS.ARMADA);
     if (filters.pt && filters.pt !== "ALL") {
-      list = list.filter(item => item.PT === filters.pt);
+      const targetPt = String(filters.pt).trim().toLowerCase();
+      list = list.filter(item => String(item.PT || "").trim().toLowerCase() === targetPt);
     }
     if (filters.depo && filters.depo !== "ALL") {
-      list = list.filter(item => item.Depo === filters.depo);
+      const targetDepo = String(filters.depo).trim().toLowerCase();
+      list = list.filter(item => String(item.Depo || "").trim().toLowerCase() === targetDepo);
     }
     if (filters.tipePengiriman && filters.tipePengiriman !== "ALL") {
-      list = list.filter(item => item.Tipe_Pengiriman === filters.tipePengiriman);
+      const targetTipe = String(filters.tipePengiriman).trim().toLowerCase();
+      list = list.filter(item => String(item.Tipe_Pengiriman || "").trim().toLowerCase() === targetTipe);
     }
     if (filters.search) {
       const q = filters.search.toLowerCase();
@@ -216,7 +219,8 @@ class DataStore {
         (item.Nopol && item.Nopol.toLowerCase().includes(q)) ||
         (item.Vehicle_ID && item.Vehicle_ID.toLowerCase().includes(q)) ||
         (item.Jenis_Armada && item.Jenis_Armada.toLowerCase().includes(q)) ||
-        (item.Depo && item.Depo.toLowerCase().includes(q))
+        (item.Depo && item.Depo.toLowerCase().includes(q)) ||
+        (item.PT && item.PT.toLowerCase().includes(q))
       );
     }
     return list;
@@ -265,13 +269,16 @@ class DataStore {
   getStandby(filters = {}) {
     let list = this.getItem(this.STORAGE_KEYS.STANDBY);
     if (filters.pt && filters.pt !== "ALL") {
-      list = list.filter(item => item.PT === filters.pt);
+      const targetPt = String(filters.pt).trim().toLowerCase();
+      list = list.filter(item => String(item.PT || "").trim().toLowerCase() === targetPt);
     }
     if (filters.depo && filters.depo !== "ALL") {
-      list = list.filter(item => item.Nama_Depo === filters.depo);
+      const targetDepo = String(filters.depo).trim().toLowerCase();
+      list = list.filter(item => String(item.Nama_Depo || item.Depo || "").trim().toLowerCase() === targetDepo);
     }
     if (filters.status && filters.status !== "ALL") {
-      list = list.filter(item => item.Status === filters.status);
+      const targetStatus = String(filters.status).trim().toLowerCase();
+      list = list.filter(item => String(item.Status || "").trim().toLowerCase() === targetStatus);
     }
     if (filters.startDate && filters.endDate) {
       list = list.filter(item => item.tanggal >= filters.startDate && item.tanggal <= filters.endDate);
@@ -283,7 +290,9 @@ class DataStore {
       list = list.filter(item =>
         (item.Nama_Driver && item.Nama_Driver.toLowerCase().includes(q)) ||
         (item.Nopol && item.Nopol.toLowerCase().includes(q)) ||
-        (item.Document_ID && item.Document_ID.toLowerCase().includes(q))
+        (item.Document_ID && item.Document_ID.toLowerCase().includes(q)) ||
+        (item.Nama_Depo && item.Nama_Depo.toLowerCase().includes(q)) ||
+        (item.PT && item.PT.toLowerCase().includes(q))
       );
     }
     return list;
@@ -342,16 +351,20 @@ class DataStore {
   getMuatan(filters = {}) {
     let list = this.getItem(this.STORAGE_KEYS.MUATAN);
     if (filters.jenisMuatan && filters.jenisMuatan !== "ALL") {
-      list = list.filter(item => item.Jenis_Muatan === filters.jenisMuatan);
+      const targetJenis = String(filters.jenisMuatan).trim().toLowerCase();
+      list = list.filter(item => String(item.Jenis_Muatan || "").trim().toLowerCase() === targetJenis);
     }
     if (filters.pt && filters.pt !== "ALL") {
-      list = list.filter(item => item.PT === filters.pt);
+      const targetPt = String(filters.pt).trim().toLowerCase();
+      list = list.filter(item => String(item.PT || "").trim().toLowerCase() === targetPt);
     }
     if (filters.depo && filters.depo !== "ALL") {
-      list = list.filter(item => item.Nama_Depo === filters.depo);
+      const targetDepo = String(filters.depo).trim().toLowerCase();
+      list = list.filter(item => String(item.Nama_Depo || item.Depo || "").trim().toLowerCase() === targetDepo);
     }
     if (filters.tipePengiriman && filters.tipePengiriman !== "ALL") {
-      list = list.filter(item => item.Tipe_Pengiriman === filters.tipePengiriman);
+      const targetTipe = String(filters.tipePengiriman).trim().toLowerCase();
+      list = list.filter(item => String(item.Tipe_Pengiriman || "").trim().toLowerCase() === targetTipe);
     }
     if (filters.startDate && filters.endDate) {
       list = list.filter(item => item.tanggal >= filters.startDate && item.tanggal <= filters.endDate);
@@ -364,7 +377,9 @@ class DataStore {
         (item.Nama_Driver && item.Nama_Driver.toLowerCase().includes(q)) ||
         (item.Nopol && item.Nopol.toLowerCase().includes(q)) ||
         (item.Nama_Product && item.Nama_Product.toLowerCase().includes(q)) ||
-        (item.Document_ID && item.Document_ID.toLowerCase().includes(q))
+        (item.Document_ID && item.Document_ID.toLowerCase().includes(q)) ||
+        (item.Nama_Depo && item.Nama_Depo.toLowerCase().includes(q)) ||
+        (item.PT && item.PT.toLowerCase().includes(q))
       );
     }
     return list;
@@ -421,8 +436,14 @@ class DataStore {
 
     // Summary Cards
     const totalArmada = armadaList.length;
-    const totalRetail = armadaList.filter(a => a.Tipe_Pengiriman === "Retail").length;
-    const totalDropping = armadaList.filter(a => a.Tipe_Pengiriman === "Dropping").length;
+    const totalRetail = armadaList.filter(a => {
+      const t = String(a.Tipe_Pengiriman || "").trim().toLowerCase();
+      return t === "retail" || t.includes("retail");
+    }).length;
+    const totalDropping = armadaList.filter(a => {
+      const t = String(a.Tipe_Pengiriman || "").trim().toLowerCase();
+      return t === "dropping" || t.includes("drop");
+    }).length;
 
     // Check currently active standby records for the latest day or unique standby vehicles
     // Standby total includes Standby, KIR, Perbaikan

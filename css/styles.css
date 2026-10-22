@@ -918,6 +918,176 @@ body {
 
 .system-status-indicator.status-local .status-pulse {
   background: #94A3B8;
+  box-shadow: 0 0 8px #94A3B8;
+}
+
+/* ==========================================================================
+   Topbar User Profile Dropdown (Pojok Kanan Atas)
+   ========================================================================== */
+.topbar-user-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.topbar-user-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: 30px;
+  padding: 4px 12px 4px 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+}
+
+body.light-theme .topbar-user-btn {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.topbar-user-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.light-theme .topbar-user-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.topbar-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #3B82F6, #10B981);
+}
+
+.topbar-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.topbar-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-chevron-icon {
+  color: var(--text-dim);
+  transition: transform 0.2s ease;
+}
+
+.topbar-user-dropdown-container.open .topbar-chevron-icon {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu Container */
+.topbar-user-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 210px;
+  background: #141E33;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  padding: 6px;
+  z-index: 250;
+  animation: dropdownFade 0.15s ease-out;
+}
+
+body.light-theme .topbar-user-menu {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topbar-menu-header {
+  padding: 10px 12px 8px;
+}
+
+.menu-header-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-header-role {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.topbar-menu-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 4px 0;
+}
+
+.topbar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.topbar-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+body.light-theme .topbar-menu-item:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.topbar-menu-item.item-logout {
+  color: #F87171;
+}
+
+.topbar-menu-item.item-logout:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
+}
   box-shadow: 0 0 6px #94A3B8;
   animation: none;
 }

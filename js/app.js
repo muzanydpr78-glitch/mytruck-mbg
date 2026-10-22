@@ -31,6 +31,9 @@ class AppController {
     // 0.2 Initialize Dark/Light Theme
     this.initTheme();
 
+    // 0.3 Populate Dynamic PT & Depo Dropdowns based on database content
+    this.populateDynamicFilters();
+
     // 1. Check auto-login session
     const autoLogin = await window.authService.checkAutoLogin();
     if (autoLogin.success) {
@@ -51,14 +54,21 @@ class AppController {
       window.lucide.createIcons();
     }
 
-    // 5. Close standby autocomplete dropdown when clicking outside
+    // 5. Close dropdowns when clicking outside
     document.addEventListener("click", (e) => {
+      // Close standby autocomplete
       const resultsBox = document.getElementById("standby-armada-results");
       const searchInput = document.getElementById("standby-search-nopol");
       if (resultsBox && resultsBox.style.display !== "none") {
         if (!resultsBox.contains(e.target) && e.target !== searchInput) {
           resultsBox.style.display = "none";
         }
+      }
+
+      // Close topbar user dropdown
+      const userDropdownContainer = document.querySelector(".topbar-user-dropdown-container");
+      if (userDropdownContainer && !userDropdownContainer.contains(e.target)) {
+        this.closeUserDropdown();
       }
     });
   }
@@ -77,24 +87,61 @@ class AppController {
     const user = window.authService.getCurrentUser();
     if (user) {
       const displayName = user.Nama || user.Username;
-      document.getElementById("sidebar-user-name").textContent = displayName;
-      document.getElementById("sidebar-user-avatar").textContent = displayName.charAt(0).toUpperCase();
 
+      // Update sidebar elements if present
+      const sidebarName = document.getElementById("sidebar-user-name");
+      const sidebarAvatar = document.getElementById("sidebar-user-avatar");
       const roleBadge = document.getElementById("sidebar-user-role");
-      roleBadge.textContent = user.Role.toUpperCase();
-      roleBadge.className = `user-role-badge role-${user.Role.toLowerCase()}`;
-
-      // Update topbar role info badge (read-only)
-      const topbarRoleBadge = document.getElementById("topbar-user-role");
-      if (topbarRoleBadge) {
-        topbarRoleBadge.textContent = `Role: ${user.Role.toUpperCase()}`;
-        topbarRoleBadge.className = `user-role-badge role-${user.Role.toLowerCase()}`;
+      if (sidebarName) sidebarName.textContent = displayName;
+      if (sidebarAvatar) sidebarAvatar.textContent = displayName.charAt(0).toUpperCase();
+      if (roleBadge) {
+        roleBadge.textContent = user.Role.toUpperCase();
+        roleBadge.className = `user-role-badge role-${user.Role.toLowerCase()}`;
       }
+
+      // Update Topbar Dropdown Profile Elements (Pojok Kanan Atas)
+      const topbarAvatar = document.getElementById("topbar-user-avatar");
+      const topbarName = document.getElementById("topbar-user-name");
+      const topbarRole = document.getElementById("topbar-user-role");
+      const menuName = document.getElementById("menu-header-name");
+      const menuRole = document.getElementById("menu-header-role");
+
+      if (topbarAvatar) topbarAvatar.textContent = displayName.charAt(0).toUpperCase();
+      if (topbarName) topbarName.textContent = displayName;
+      if (topbarRole) {
+        topbarRole.textContent = user.Role.toUpperCase();
+        topbarRole.className = `user-role-badge role-${user.Role.toLowerCase()}`;
+      }
+      if (menuName) menuName.textContent = displayName;
+      if (menuRole) menuRole.textContent = `Role: ${user.Role.toUpperCase()}`;
     }
 
     this.updateRbacUi();
+    this.populateDynamicFilters();
     this.navigateTo(this.currentViewId);
     if (window.lucide) window.lucide.createIcons();
+  }
+
+  toggleUserDropdown(e) {
+    if (e) e.stopPropagation();
+    const container = document.querySelector(".topbar-user-dropdown-container");
+    const menu = document.getElementById("topbar-user-dropdown-menu");
+    if (!menu) return;
+
+    const isOpen = menu.style.display === "block";
+    if (isOpen) {
+      this.closeUserDropdown();
+    } else {
+      menu.style.display = "block";
+      if (container) container.classList.add("open");
+    }
+  }
+
+  closeUserDropdown() {
+    const container = document.querySelector(".topbar-user-dropdown-container");
+    const menu = document.getElementById("topbar-user-dropdown-menu");
+    if (menu) menu.style.display = "none";
+    if (container) container.classList.remove("open");
   }
 
   async handleLoginSubmit(e) {
@@ -256,7 +303,11 @@ class AppController {
     if (viewId === "view-dashboard-standby") this.refreshStandbyDashboard();
     if (viewId === "view-dashboard-muatan") this.refreshMuatanDashboard();
     if (viewId === "view-master-armada") this.renderMasterArmadaTable();
-    if (viewId === "view-master-standby") this.renderMasterStandbyTable();
+    if (viewId === "view-master-standby") {
+      const searchEl = document.getElementById("search-master-standby");
+      if (searchEl) searchEl.value = "";
+      this.renderMasterStandbyTable();
+    }
     if (viewId === "view-master-muatan") this.renderMasterMuatanTable();
     if (viewId === "view-user-management") this.renderUsersTable();
     if (viewId === "view-settings") {
@@ -300,14 +351,85 @@ class AppController {
     }
   }
 
+  // --- Dynamic Filters Populator ---
+  populateDynamicFilters() {
+    const armadaList = window.dataStore.getItem(window.dataStore.STORAGE_KEYS.ARMADA) || [];
+    const standbyList = window.dataStore.getItem(window.dataStore.STORAGE_KEYS.STANDBY) || [];
+    const muatanList = window.dataStore.getItem(window.dataStore.STORAGE_KEYS.MUATAN) || [];
+
+    // Extract unique PTs
+    const ptSet = new Set();
+    armadaList.forEach(a => { if (a.PT && a.PT.trim()) ptSet.add(a.PT.trim()); });
+    standbyList.forEach(s => { if (s.PT && s.PT.trim()) ptSet.add(s.PT.trim()); });
+    muatanList.forEach(m => { if (m.PT && m.PT.trim()) ptSet.add(m.PT.trim()); });
+    const pts = Array.from(ptSet).sort();
+
+    // Extract unique Depos
+    const depoSet = new Set();
+    armadaList.forEach(a => { if (a.Depo && a.Depo.trim()) depoSet.add(a.Depo.trim()); });
+    standbyList.forEach(s => { 
+      const d = s.Nama_Depo || s.Depo;
+      if (d && d.trim()) depoSet.add(d.trim()); 
+    });
+    muatanList.forEach(m => { 
+      const d = m.Nama_Depo || m.Depo;
+      if (d && d.trim()) depoSet.add(d.trim()); 
+    });
+    const depos = Array.from(depoSet).sort();
+
+    // Helper to populate a select element preserving selection if possible
+    const updateSelect = (selectId, items, defaultLabel = "Semua", isAllOption = true) => {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      const currentVal = select.value;
+      
+      let html = "";
+      if (isAllOption) {
+        html += `<option value="ALL">${defaultLabel}</option>`;
+      }
+      items.forEach(item => {
+        html += `<option value="${item}">${item}</option>`;
+      });
+      select.innerHTML = html;
+
+      // Preserve previously selected value if it exists in the new list, else ALL or first
+      if (currentVal && (items.includes(currentVal) || currentVal === "ALL")) {
+        select.value = currentVal;
+      } else {
+        select.value = isAllOption ? "ALL" : (items[0] || "");
+      }
+    };
+
+    // 1. Dashboard Armada Filters
+    updateSelect("filter-armada-pt", pts, "Semua PT");
+    updateSelect("filter-armada-depo", depos, "Semua Depo");
+
+    // 2. Dashboard Standby Filters
+    updateSelect("filter-standby-pt", pts, "Semua PT");
+    updateSelect("filter-standby-depo", depos, "Semua Depo");
+
+    // 3. Dashboard Muatan Filters
+    updateSelect("filter-muatan-pt", pts, "Semua PT");
+    updateSelect("filter-muatan-depo", depos, "Semua Depo");
+
+    // 4. Modal Armada Form Dropdowns
+    if (pts.length > 0) updateSelect("armada-pt", pts, "", false);
+    if (depos.length > 0) updateSelect("armada-depo", depos, "", false);
+  }
+
   // =========================================================================
   // VIEW 3.1: DASHBOARD ARMADA LOGIC
   // =========================================================================
   refreshArmadaDashboard() {
-    const pt = document.getElementById("filter-armada-pt").value;
-    const depo = document.getElementById("filter-armada-depo").value;
-    const bulan = document.getElementById("filter-armada-bulan").value;
-    const tahun = document.getElementById("filter-armada-tahun").value;
+    const elPt = document.getElementById("filter-armada-pt");
+    const elDepo = document.getElementById("filter-armada-depo");
+    const elBulan = document.getElementById("filter-armada-bulan");
+    const elTahun = document.getElementById("filter-armada-tahun");
+
+    const pt = elPt ? elPt.value : "ALL";
+    const depo = elDepo ? elDepo.value : "ALL";
+    const bulan = elBulan ? elBulan.value : "";
+    const tahun = elTahun ? elTahun.value : "";
 
     const data = window.dataStore.getArmadaDashboardMetrics({ pt, depo, bulan, tahun });
 
@@ -724,6 +846,7 @@ class AppController {
 
     window.dataStore.saveArmada(payload, user);
     this.closeModal("modal-armada");
+    this.populateDynamicFilters();
     this.renderMasterArmadaTable();
     this.refreshArmadaDashboard();
     this.showToast("Berhasil Disimpan", `Data armada ${payload.Nopol} telah diperbarui.`, "success");
@@ -737,6 +860,7 @@ class AppController {
     if (confirm("Apakah Anda yakin ingin menghapus unit armada ini?")) {
       const user = window.authService.getCurrentUser()?.Username || "Operator";
       window.dataStore.deleteArmada(vehicleId, user);
+      this.populateDynamicFilters();
       this.renderMasterArmadaTable();
       this.refreshArmadaDashboard();
       this.showToast("Armada Dihapus", "Unit armada berhasil dihapus dari sistem.", "info");
@@ -1359,6 +1483,7 @@ class AppController {
   resetDatabaseDemo() {
     if (confirm("Reset seluruh data ke kondisi demo awal? Semua modifikasi lokal akan dikembalikan.")) {
       window.dataStore.initDatabase(true);
+      this.populateDynamicFilters();
       this.showToast("Data Direset", "Database berhasil dikembalikan ke seed data awal.", "info");
       this.refreshArmadaDashboard();
       this.renderLogsTable();
