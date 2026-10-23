@@ -415,6 +415,9 @@ class AppController {
     // 4. Modal Armada Form Dropdowns
     if (pts.length > 0) updateSelect("armada-pt", pts, "", false);
     if (depos.length > 0) updateSelect("armada-depo", depos, "", false);
+
+    // 5. Modal Export Armada Dropdown
+    updateSelect("export-armada-depo", depos, "-- Semua Depo --");
   }
 
   // =========================================================================
@@ -867,10 +870,42 @@ class AppController {
     }
   }
 
+  openExportArmadaModal() {
+    this.populateDynamicFilters();
+    const modal = document.getElementById("modal-export-armada");
+    if (modal) {
+      modal.classList.add("active");
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+
+  handleExportArmadaConfirm() {
+    const depoSelect = document.getElementById("export-armada-depo");
+    const selectedDepo = depoSelect ? depoSelect.value : "ALL";
+
+    let data = window.dataStore.getArmada();
+    let filenameSuffix = "Semua_Depo";
+
+    if (selectedDepo && selectedDepo !== "ALL") {
+      const cleanTarget = String(selectedDepo).trim().toLowerCase();
+      data = data.filter(item => String(item.Depo || "").trim().toLowerCase() === cleanTarget);
+      filenameSuffix = selectedDepo.replace(/[^a-zA-Z0-9_-]/g, "_");
+    }
+
+    if (!data.length) {
+      this.showToast("Peringatan", "Tidak ada data armada untuk depo yang dipilih.", "warning");
+      return;
+    }
+
+    const filename = `Master_Armada_${filenameSuffix}.csv`;
+    window.dataStore.exportToCsv(data, filename);
+
+    this.closeModal("modal-export-armada");
+    this.showToast("Export Berhasil", `Berhasil mengunduh ${data.length} data armada (${filename}).`, "success");
+  }
+
   exportMasterArmada() {
-    const data = window.dataStore.getArmada();
-    window.dataStore.exportToExcel(data, "Master_Armada.xlsx", "DB_Armada");
-    this.showToast("Export Berhasil", "File Master_Armada.xlsx berhasil diunduh.", "success");
+    this.openExportArmadaModal();
   }
 
   // =========================================================================

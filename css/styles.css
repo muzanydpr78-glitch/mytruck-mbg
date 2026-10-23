@@ -2326,3 +2326,116 @@ body.light-theme .standby-summary-card {
     margin: 0;
   }
 }
+
+/* ==========================================================================
+   MODAL EXPORT ARMADA (Clean, Modern & Accessible Design)
+   ========================================================================== */
+.modal-export-custom {
+  background: #141E33;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+body.light-theme .modal-export-custom {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+}
+
+.export-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.12);
+  color: #3B82F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+body.light-theme .export-icon-badge {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.export-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.export-select-icon-left {
+  position: absolute;
+  left: 14px;
+  color: var(--text-dim);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.export-select-icon-right {
+  position: absolute;
+  right: 14px;
+  color: var(--text-dim);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.export-select-field {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 11px 40px 11px 42px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-size: 13.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+body.light-theme .export-select-field {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+.export-select-field:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.btn-export-csv {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.btn-export-csv:hover {
+  background: #1D4ED8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+}
+
+.btn-export-csv:active {
+  transform: translateY(0);
+}

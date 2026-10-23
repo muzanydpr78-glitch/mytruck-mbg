@@ -754,7 +754,7 @@ class DataStore {
     };
   }
 
-  // --- SheetJS Excel Helpers ---
+  // --- SheetJS Excel & CSV Helpers ---
   exportToExcel(data, filename = "Export_Data.xlsx", sheetName = "Sheet1") {
     if (typeof XLSX === "undefined") {
       alert("Library XLSX (SheetJS) belum termuat.");
@@ -764,6 +764,43 @@ class DataStore {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
     XLSX.writeFile(wb, filename);
+  }
+
+  exportToCsv(data, filename = "Export_Data.csv") {
+    if (typeof XLSX !== "undefined") {
+      const ws = XLSX.utils.json_to_sheet(data);
+      const csvOutput = XLSX.utils.sheet_to_csv(ws);
+      const blob = new Blob(["\uFEFF" + csvOutput], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      if (!data || !data.length) return;
+      const headers = Object.keys(data[0]);
+      const csvRows = [headers.join(",")];
+      data.forEach(row => {
+        const values = headers.map(header => {
+          const val = row[header] !== undefined && row[header] !== null ? String(row[header]) : "";
+          const escaped = val.replace(/"/g, '""');
+          return `"${escaped}"`;
+        });
+        csvRows.push(values.join(","));
+      });
+      const blob = new Blob(["\uFEFF" + csvRows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   }
 
   downloadBkbTemplate() {
